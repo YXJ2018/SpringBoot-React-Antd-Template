@@ -119,14 +119,15 @@ export default function Workbench() {
   const stockValue = useCountUp(32767);
   const collectValue = useCountUp(89324);
 
-  const primaryColor = token.colorPrimary;
+  const { colorPrimary, colorPrimaryBg, colorSuccess } = token;
 
   const lineConfig = {
     data: trendData,
     xField: 'date',
     yField: 'value',
-    seriesField: 'type',
+    colorField: 'type',
     smooth: true,
+    scale: { color: { range: [colorPrimary, colorSuccess] } },
     point: { size: 3, shape: 'circle' as const },
     legend: { position: 'top' as const, offsetY: -4 },
     yAxis: {
@@ -151,7 +152,7 @@ export default function Workbench() {
     data: topProductsData,
     xField: 'name',
     yField: 'sales',
-    style: { fill: primaryColor },
+    style: { fill: colorPrimary },
     scale: { x: { paddingInner: 0.5, paddingOuter: 0.25 } },
     columnStyle: { radius: [6, 6, 0, 0] },
     label: {
@@ -210,7 +211,10 @@ export default function Workbench() {
             <Statistic
               title={
                 <div className='flex items-center gap-x-2'>
-                  <div className='flex items-center justify-center w-11 h-11 rounded-xl bg-primary-bg'>
+                  <div
+                    className='flex items-center justify-center w-11 h-11 rounded-xl'
+                    style={{ backgroundColor: colorPrimaryBg }}
+                  >
                     <InboxOutlined style={{ color: '#06b6d4', fontSize: '18px' }} />
                   </div>
                   <span className='text-gray-500 font-medium'>库存金额</span>
