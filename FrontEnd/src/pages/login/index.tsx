@@ -1,0 +1,129 @@
+import { useState } from 'react';
+import { Form, Input, Button, Card, message } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { login, getInfo } from '@/store/slices/userSlice';
+import type { AppDispatch } from '@/store';
+
+export default function Login() {
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const onFinish = async (values: { username: string; password: string }) => {
+    setLoading(true);
+    try {
+      await dispatch(login(values)).unwrap();
+      await dispatch(getInfo()).unwrap();
+      message.success('登录成功');
+      navigate('/', { replace: true });
+    } catch {
+      // Error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className='relative flex items-center justify-center min-h-screen overflow-hidden'
+      style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 30%, #e0e7ff 60%, #f0f5ff 100%)' }}
+    >
+      {/* 装饰圆形 */}
+      <div
+        className='absolute rounded-full'
+        style={{
+          width: 520,
+          height: 520,
+          background: 'radial-gradient(circle, rgba(59,130,246,0.35) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          top: -160,
+          right: -120,
+        }}
+      />
+      <div
+        className='absolute rounded-full'
+        style={{
+          width: 400,
+          height: 400,
+          background: 'radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          bottom: -120,
+          left: -100,
+        }}
+      />
+      <div
+        className='absolute rounded-full'
+        style={{
+          width: 280,
+          height: 280,
+          background: 'radial-gradient(circle, rgba(34,197,94,0.25) 0%, transparent 70%)',
+          filter: 'blur(50px)',
+          top: '35%',
+          left: '8%',
+        }}
+      />
+
+      {/* 登录卡片 */}
+      <Card
+        className='relative w-100 shadow-xl backdrop-blur-sm rounded-2xl!'
+        styles={{ body: { padding: '40px 36px 32px' } }}
+      >
+        {/* Logo & 标题 */}
+        <div className='text-center mb-8'>
+          <div
+            className='inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4'
+            style={{ background: 'linear-gradient(135deg, var(--ant-color-primary), var(--ant-color-primary-hover))' }}
+          >
+            <span className='text-white text-2xl font-bold'>B</span>
+          </div>
+          <h1 className='text-2xl font-bold text-gray-800 tracking-tight'>Base Admin</h1>
+          <p className='text-gray-400 text-sm mt-1.5'>基础权限管理系统</p>
+        </div>
+
+        {/* 登录表单 */}
+        <Form
+          name='login'
+          initialValues={{ username: 'admin', password: 'admin123' }}
+          onFinish={onFinish}
+          size='large'
+        >
+          <Form.Item
+            name='username'
+            rules={[{ required: true, message: '请输入用户名' }]}
+          >
+            <Input
+              prefix={<UserOutlined className='text-gray-400' />}
+              placeholder='用户名'
+              className='rounded-lg!'
+            />
+          </Form.Item>
+          <Form.Item
+            name='password'
+            rules={[{ required: true, message: '请输入密码' }]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className='text-gray-400' />}
+              placeholder='密码'
+              className='rounded-lg!'
+            />
+          </Form.Item>
+          <Form.Item className='mb-2!'>
+            <Button
+              type='primary'
+              htmlType='submit'
+              loading={loading}
+              block
+              className='rounded-lg! h-11! text-base! font-medium!'
+            >
+              登 录
+            </Button>
+          </Form.Item>
+        </Form>
+
+        <p className='text-center text-gray-400 text-xs mt-4'>默认账号: admin / admin123</p>
+      </Card>
+    </div>
+  );
+}
