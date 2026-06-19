@@ -50,7 +50,7 @@ const data = [
 const App: React.FC = () => {
   const [dataSource, setDataSource] = useState(data);
 
-  const handleDragSortEnd = (beforeIndex: number, afterIndex: number, newDataSource: any) => {
+  const handleDragSortEnd = (_beforeIndex: number, _afterIndex: number, newDataSource: any) => {
     setDataSource(newDataSource);
     message.success('修改列表排序成功');
   };
