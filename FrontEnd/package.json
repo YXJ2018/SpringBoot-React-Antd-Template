@@ -1,7 +1,8 @@
 {
-  "name": "base-config",
+  "name": "base-admin",
+  "description": "基于 React 19 + Ant Design 6 + Vite 8 的管理系统，搭配 Spring Boot 后端实现开箱即用的 RBAC 权限管理。",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
