@@ -16,4 +16,5 @@ public class UserInfoVO {
     private List<String> roles;
     private Set<String> permissions;
     private List<MenuVO> menus;
+    private boolean demoEnabled;
 }

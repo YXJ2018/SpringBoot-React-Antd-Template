@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, type Key, type ReactNode } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Card,
   Tree,
@@ -31,6 +32,7 @@ import {
 import { getMenuTreeApi, getMenuListApi, createMenuApi, updateMenuApi, deleteMenuApi } from '@/api/menu';
 import { PermissionButton } from '@/components/PermissionButton';
 import type { MenuVO, MenuTree } from '@/types/menu';
+import type { RootState } from '@/store';
 import { IconPicker } from '@/components/IconPicker';
 import styles from './index.module.css';
 
@@ -41,6 +43,7 @@ const menuTypeMap: Record<string, { text: string; color: string; icon: ReactNode
 };
 
 export default function MenuManage() {
+  const demoEnabled = useSelector((state: RootState) => state.user.demoEnabled);
   const [menuTree, setMenuTree] = useState<MenuTree[]>([]);
   const [flatMenus, setFlatMenus] = useState<MenuVO[]>([]);
   const [loading, setLoading] = useState(false);
@@ -352,7 +355,7 @@ export default function MenuManage() {
                 onDrop={handleDrop}
                 // eslint-disable-next-line react-hooks/refs
                 treeData={buildTreeData(menuTree, searchValue, menuMap.current)}
-                titleRender={(node) => renderTreeNode(node as MenuTreeNode, selectedMenu, handleDelete, handleAddChild)}
+                titleRender={(node) => renderTreeNode(node as MenuTreeNode, selectedMenu, handleDelete, handleAddChild, demoEnabled)}
               />
             </div>
           </Spin>
@@ -501,6 +504,7 @@ export default function MenuManage() {
                     perm={isAddChild ? 'system:menu:add' : 'system:menu:edit'}
                     type='primary'
                     loading={saving}
+                    disabled={demoEnabled && !isAddChild && !!selectedMenu?.demoProtected}
                     onClick={handleSave}
                   >
                     {isAddChild ? '创建' : '保存'}
@@ -526,6 +530,7 @@ interface MenuTreeNode {
   title: string;
   menuType: 'M' | 'C' | 'F';
   status: number;
+  demoProtected?: boolean;
   children?: MenuTreeNode[];
 }
 
@@ -542,6 +547,7 @@ function buildTreeData(tree: MenuTree[], searchValue: string, menuMap: Map<numbe
         title: node.menuName,
         menuType: full?.menuType || 'M',
         status: full?.status ?? 0,
+        demoProtected: node.demoProtected ?? full?.demoProtected ?? false,
         children,
       } as unknown as DataNode;
     })
@@ -553,10 +559,12 @@ function renderTreeNode(
   selectedMenu: MenuVO | null,
   onDelete: (id: number) => void,
   onAddChild: (id: number) => void,
+  demoEnabled: boolean,
 ) {
   const typeInfo = menuTypeMap[node.menuType] || menuTypeMap.M;
   const isSelected = selectedMenu?.menuId === node.key;
   const isDisabled = node.status === 1;
+  const isProtected = demoEnabled && node.demoProtected;
 
   return (
     <div className={`flex items-center justify-between w-full py-px ${isDisabled ? styles.disabledNode : ''}`}>
@@ -580,10 +588,13 @@ function renderTreeNode(
             禁用
           </Tag>
         )}
+        {isProtected && (
+          <Tag color='warning'>受保护</Tag>
+        )}
       </div>
       <Space size={0}>
-        {node.menuType !== 'F' && (
-          <Tooltip title='新增子菜单'>
+        {node.menuType !== 'F' && !isProtected && (
+          <Tooltip title='新增子菜单 | 按钮'>
             <PermissionButton
               perm='system:menu:add'
               type='text'
@@ -596,25 +607,27 @@ function renderTreeNode(
             />
           </Tooltip>
         )}
-        <Popconfirm
-          title='确认删除该菜单？'
-          onConfirm={(e) => {
-            e?.stopPropagation();
-            onDelete(node.key);
-          }}
-          onCancel={(e) => e?.stopPropagation()}
-        >
-          <Tooltip title='删除'>
-            <PermissionButton
-              perm='system:menu:delete'
-              type='text'
-              size='small'
-              danger
-              icon={<DeleteOutlined />}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </Tooltip>
-        </Popconfirm>
+        {!isProtected && (
+          <Popconfirm
+            title='确认删除该菜单？'
+            onConfirm={(e) => {
+              e?.stopPropagation();
+              onDelete(node.key);
+            }}
+            onCancel={(e) => e?.stopPropagation()}
+          >
+            <Tooltip title='删除'>
+              <PermissionButton
+                perm='system:menu:delete'
+                type='text'
+                size='small'
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Tooltip>
+          </Popconfirm>
+        )}
       </Space>
     </div>
   );

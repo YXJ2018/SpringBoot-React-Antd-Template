@@ -12,6 +12,7 @@ export interface MenuVO {
   status: number;
   remark: string;
   createTime: string;
+  demoProtected?: boolean;
 }
 
 export interface MenuTree {
@@ -22,6 +23,7 @@ export interface MenuTree {
   icon: string;
   sortOrder: number;
   status: number;
+  demoProtected?: boolean;
   children: MenuTree[];
 }
 

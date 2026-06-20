@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { ProFormText, ProFormSelect, ProFormDigit, ProFormTextArea } from '@ant-design/pro-components';
 import { Button, Card, List, message, Tree, Empty, Space, Tag, Popconfirm, Input, Checkbox, theme } from 'antd';
 import { SafetyOutlined, UserOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -15,9 +16,13 @@ import { PermissionButton } from '@/components/PermissionButton';
 import { BaseModalForm } from '@/components/BaseModalForm';
 import type { RoleVO } from '@/types/role';
 import type { MenuTree } from '@/types/menu';
+import type { RootState } from '@/store';
 import dictionary from '../../../dictionary';
 
+const ADMIN_ROLE_ID = 1;
+
 export default function RoleManage() {
+  const demoEnabled = useSelector((state: RootState) => state.user.demoEnabled);
   const [roles, setRoles] = useState<RoleVO[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<RoleVO | null>(null);
@@ -106,6 +111,8 @@ export default function RoleManage() {
     setCheckedKeys([]);
   };
 
+  const isAdminRole = (roleId: number) => demoEnabled && roleId === ADMIN_ROLE_ID;
+
   const filteredRoles = roles.filter(
     (r) => !searchValue || r.roleName.includes(searchValue) || r.roleKey.includes(searchValue),
   );
@@ -185,41 +192,45 @@ export default function RoleManage() {
                       启用
                     </Tag>
                   )}
-                  <PermissionButton
-                    perm='system:role:edit'
-                    variant='link'
-                    type='link'
-                    style={{ padding: '0px' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingRole(role);
-                      setModalOpen(true);
-                    }}
-                  >
-                    编辑
-                  </PermissionButton>
-                  <Popconfirm
-                    title='确认删除该角色？'
-                    onConfirm={async (e) => {
-                      e?.stopPropagation();
-                      await deleteRoleApi(role.roleId);
-                      message.success('已删除角色');
-                      if (selectedRole?.roleId === role.roleId) {
-                        setSelectedRole(null);
-                      }
-                      loadRoles();
-                    }}
-                  >
+                  {!isAdminRole(role.roleId) && (
                     <PermissionButton
-                      perm='system:role:delete'
+                      perm='system:role:edit'
                       variant='link'
                       type='link'
                       style={{ padding: '0px' }}
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingRole(role);
+                        setModalOpen(true);
+                      }}
                     >
-                      删除
+                      编辑
                     </PermissionButton>
-                  </Popconfirm>
+                  )}
+                  {!isAdminRole(role.roleId) && (
+                    <Popconfirm
+                      title='确认删除该角色？'
+                      onConfirm={async (e) => {
+                        e?.stopPropagation();
+                        await deleteRoleApi(role.roleId);
+                        message.success('已删除角色');
+                        if (selectedRole?.roleId === role.roleId) {
+                          setSelectedRole(null);
+                        }
+                        loadRoles();
+                      }}
+                    >
+                      <PermissionButton
+                        perm='system:role:delete'
+                        variant='link'
+                        type='link'
+                        style={{ padding: '0px' }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        删除
+                      </PermissionButton>
+                    </Popconfirm>
+                  )}
                 </Space>
               </div>
             </List.Item>
@@ -301,6 +312,7 @@ export default function RoleManage() {
             >
               <Space>
                 <Button
+                  disabled={isAdminRole(selectedRole.roleId)}
                   onClick={() => {
                     const ids = (selectedRole.menuIds || []).filter((id) => leafIdSet.has(id));
                     setCheckedKeys(ids);
@@ -311,6 +323,7 @@ export default function RoleManage() {
                 <Button
                   type='primary'
                   loading={saving}
+                  disabled={isAdminRole(selectedRole.roleId)}
                   onClick={handleSavePermissions}
                 >
                   保存

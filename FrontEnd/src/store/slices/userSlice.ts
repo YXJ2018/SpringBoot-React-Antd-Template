@@ -9,6 +9,7 @@ interface UserState {
   userInfo: UserInfo | null;
   permissions: string[];
   menus: MenuTree[];
+  demoEnabled: boolean;
 }
 
 const initialState: UserState = {
@@ -16,6 +17,7 @@ const initialState: UserState = {
   userInfo: null,
   permissions: [],
   menus: [],
+  demoEnabled: false,
 };
 
 export const login = createAsyncThunk(
@@ -41,6 +43,7 @@ const userSlice = createSlice({
       state.userInfo = null;
       state.permissions = [];
       state.menus = [];
+      state.demoEnabled = false;
       removeToken();
     },
   },
@@ -54,6 +57,7 @@ const userSlice = createSlice({
         state.userInfo = userInfo;
         state.permissions = userInfo.permissions ?? [];
         state.menus = menus ?? [];
+        state.demoEnabled = userInfo.demoEnabled ?? false;
       });
   },
 });

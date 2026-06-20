@@ -15,5 +15,6 @@ public class MenuVO {
     private String icon;
     private Integer sortOrder;
     private Integer status;
+    private boolean demoProtected;
     private List<MenuVO> children;
 }

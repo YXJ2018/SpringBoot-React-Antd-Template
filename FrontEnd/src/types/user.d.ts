@@ -5,6 +5,7 @@ export interface UserInfo {
   avatar: string;
   roles: string[];
   permissions: string[];
+  demoEnabled: boolean;
 }
 
 export interface UserVO {

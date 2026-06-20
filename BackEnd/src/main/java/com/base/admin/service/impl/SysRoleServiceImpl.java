@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.admin.common.Constants;
 import com.base.admin.common.PageResult;
+import com.base.admin.config.DemoGuard;
 import com.base.admin.domain.dto.RoleDTO;
 import com.base.admin.domain.dto.RoleMenuDTO;
 import com.base.admin.domain.entity.SysMenu;
@@ -32,6 +33,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     private final SysRoleMenuMapper roleMenuMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysMenuMapper menuMapper;
+    private final DemoGuard demoGuard;
 
     @Override
     public PageResult<RoleVO> list(String roleName, String roleKey, Integer status,
@@ -95,6 +97,7 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public void update(RoleDTO dto) {
+        demoGuard.checkModifyRole(dto.getRoleId(), "编辑");
         SysRole role = roleMapper.selectById(dto.getRoleId());
         if (role == null) {
             throw new BusinessException("角色不存在");
@@ -110,6 +113,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     @Transactional
     public void delete(Long roleId) {
+        demoGuard.checkModifyRole(roleId, "删除");
         long userCount = userRoleMapper.selectCount(
                 new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getRoleId, roleId));
         if (userCount > 0) {
@@ -122,6 +126,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     @Transactional
     public void assignMenus(RoleMenuDTO dto) {
+        demoGuard.checkAssignMenus(dto.getRoleId());
         List<Long> validMenuIds = dto.getMenuIds() != null
                 ? new ArrayList<>(dto.getMenuIds()) : new ArrayList<>();
 

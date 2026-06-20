@@ -23,3 +23,6 @@ mybatis-plus:
 jwt:
   secret: YmFzZS1hZG1pbi1zZWNyZXQta2V5LW11c3QtYmUtYXQtbGVhc3QtMjU2LWJpdHMtbG9uZw==
   expiration: 86400000
+
+demo:
+  enabled: true

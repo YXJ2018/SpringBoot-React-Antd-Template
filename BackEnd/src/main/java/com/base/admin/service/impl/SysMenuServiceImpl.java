@@ -2,6 +2,7 @@ package com.base.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.base.admin.common.Constants;
+import com.base.admin.config.DemoGuard;
 import com.base.admin.domain.dto.MenuDTO;
 import com.base.admin.domain.entity.SysMenu;
 import com.base.admin.domain.entity.SysRole;
@@ -24,17 +25,21 @@ public class SysMenuServiceImpl implements SysMenuService {
     private final SysMenuMapper menuMapper;
     private final SysRoleMapper roleMapper;
     private final SysRoleMenuMapper roleMenuMapper;
+    private final DemoGuard demoGuard;
 
     @Override
     public List<SysMenu> list() {
-        return menuMapper.selectList(new LambdaQueryWrapper<SysMenu>()
+        List<SysMenu> menus = menuMapper.selectList(new LambdaQueryWrapper<SysMenu>()
                 .orderByAsc(SysMenu::getSortOrder));
+        menus.forEach(m -> m.setDemoProtected(demoGuard.isMenuProtected(m.getMenuId())));
+        return menus;
     }
 
     @Override
     public List<MenuVO> tree() {
         List<SysMenu> menus = menuMapper.selectList(new LambdaQueryWrapper<SysMenu>()
                 .orderByAsc(SysMenu::getSortOrder));
+        menus.forEach(m -> m.setDemoProtected(demoGuard.isMenuProtected(m.getMenuId())));
         return TreeUtil.buildMenuTree(menus);
     }
 
@@ -71,6 +76,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public void update(MenuDTO dto) {
+        demoGuard.checkUpdateMenu(dto.getMenuId());
         SysMenu menu = menuMapper.selectById(dto.getMenuId());
         if (menu == null) {
             throw new BusinessException("菜单不存在");
@@ -91,6 +97,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public void delete(Long menuId) {
+        demoGuard.checkDeleteMenu(menuId);
         long childCount = menuMapper.selectCount(
                 new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getParentId, menuId));
         if (childCount > 0) {

@@ -11,6 +11,7 @@ import com.base.admin.domain.entity.SysUserRole;
 import com.base.admin.domain.vo.RoleSimpleVO;
 import com.base.admin.domain.vo.UserVO;
 import com.base.admin.exception.BusinessException;
+import com.base.admin.config.DemoGuard;
 import com.base.admin.mapper.SysRoleMapper;
 import com.base.admin.mapper.SysUserMapper;
 import com.base.admin.mapper.SysUserRoleMapper;
@@ -32,6 +33,7 @@ public class SysUserServiceImpl implements SysUserService {
     private final SysUserRoleMapper userRoleMapper;
     private final SysRoleMapper roleMapper;
     private final PasswordEncoder passwordEncoder;
+    private final DemoGuard demoGuard;
 
     @Override
     public PageResult<UserVO> list(String username, String nickname, String phone, Integer status,
@@ -60,6 +62,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public void create(UserDTO dto) {
+        // 演示模式：禁止把管理员角色分配给普通用户
+        demoGuard.checkAssignRoles(null, dto.getRoleIds());
+
         long count = userMapper.selectCount(
                 new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, dto.getUsername()));
         if (count > 0) {
@@ -82,6 +87,10 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public void update(UserDTO dto) {
+        demoGuard.checkModifyUser(dto.getUserId(), "编辑");
+        // 演示模式：非管理员不允许分配管理员角色
+        demoGuard.checkAssignRoles(dto.getUserId(), dto.getRoleIds());
+
         SysUser user = userMapper.selectById(dto.getUserId());
         if (user == null) {
             throw new BusinessException("用户不存在");
@@ -102,12 +111,14 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public void delete(Long userId) {
+        demoGuard.checkModifyUser(userId, "删除");
         userMapper.deleteById(userId);
         userRoleMapper.deleteByUserId(userId);
     }
 
     @Override
     public void resetPwd(Long userId, String password) {
+        demoGuard.checkModifyUser(userId, "重置密码");
         SysUser user = userMapper.selectById(userId);
         if (user == null) {
             throw new BusinessException("用户不存在");
@@ -118,6 +129,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public void changeStatus(Long userId, Integer status) {
+        demoGuard.checkModifyUser(userId, "修改状态");
         SysUser user = userMapper.selectById(userId);
         if (user == null) {
             throw new BusinessException("用户不存在");
@@ -129,6 +141,8 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public void assignRoles(UserRoleDTO dto) {
+        demoGuard.checkModifyUser(dto.getUserId(), "分配角色");
+        demoGuard.checkAssignRoles(dto.getUserId(), dto.getRoleIds());
         saveUserRoles(dto.getUserId(), dto.getRoleIds());
     }
 

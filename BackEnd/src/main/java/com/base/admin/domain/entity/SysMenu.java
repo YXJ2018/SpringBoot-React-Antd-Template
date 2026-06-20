@@ -1,6 +1,7 @@
 package com.base.admin.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.base.admin.common.BaseEntity;
@@ -25,4 +26,8 @@ public class SysMenu extends BaseEntity {
     private Integer visible;
     private Integer status;
     private String remark;
+
+    /** 演示模式下是否受保护（不可编辑/删除），非数据库字段 */
+    @TableField(exist = false)
+    private boolean demoProtected;
 }

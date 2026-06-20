@@ -22,6 +22,7 @@ public class TreeUtil {
                         .icon(m.getIcon())
                         .sortOrder(m.getSortOrder())
                         .status(m.getStatus())
+                        .demoProtected(m.isDemoProtected())
                         .children(new ArrayList<>())
                         .build()));
 

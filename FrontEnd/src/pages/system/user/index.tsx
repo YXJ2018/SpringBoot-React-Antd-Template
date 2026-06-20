@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import type { ActionType, ProColumnType } from '@ant-design/pro-components';
 import { BaseProTable } from '@/components/BaseProTable';
@@ -11,9 +12,14 @@ import { ActionButtons } from '@/components/ActionButtons';
 import dictionary from '@/dictionary';
 import IconStatus from '@/components/IconStatus';
 import type { UserVO } from '@/types/user';
+import type { RootState } from '@/store';
+
+const ADMIN_USER_ID = 1;
+const ADMIN_ROLE_ID = 1;
 
 export default function UserManage() {
   const actionRef = useRef<ActionType>(null);
+  const demoEnabled = useSelector((state: RootState) => state.user.demoEnabled);
   const [editingUser, setEditingUser] = useState<UserVO | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [resetPwdOpen, setResetPwdOpen] = useState(false);
@@ -23,10 +29,16 @@ export default function UserManage() {
   const [initialRoleIds, setInitialRoleIds] = useState<number[]>([]);
   const [allRoles, setAllRoles] = useState<{ key: string; title: string }[]>([]);
 
+  const isAdminUser = (userId: number) => demoEnabled && userId === ADMIN_USER_ID;
+
   const openUserModal = async (user?: UserVO) => {
     setEditingUser(user ?? null);
     const res = await getRoleListApi({ pageNum: 1, pageSize: 100 });
-    setAllRoles(res.rows?.map((r) => ({ key: String(r.roleId), title: r.roleName })));
+    setAllRoles(res.rows?.map((r) => ({
+      key: String(r.roleId),
+      title: r.roleName,
+      disabled: demoEnabled && r.roleId === ADMIN_ROLE_ID && user?.userId !== ADMIN_USER_ID,
+    } as any)));
     setModalOpen(true);
   };
 
@@ -80,45 +92,50 @@ export default function UserManage() {
       render: (_, record) => (
         <ActionButtons
           items={[
-            {
-              key: 'edit',
-              perm: 'system:user:edit',
-              label: '编辑',
-              onClick: () => openUserModal(record),
-            },
-            {
-              key: 'resetPwd',
-              perm: 'system:user:resetPwd',
-              label: '重置密码',
-              onClick: () => {
-                setResetPwdUserId(record.userId);
-                setResetPwdOpen(true);
+            ...(!isAdminUser(record.userId) ? [
+              {
+                key: 'edit',
+                perm: 'system:user:edit',
+                label: '编辑',
+                onClick: () => openUserModal(record),
               },
-            },
-
-            {
-              key: 'assignRole',
-              perm: 'system:user:role-management',
-              label: '分配角色',
-              onClick: async () => {
-                setAssignRoleUserId(record.userId);
-                setInitialRoleIds(record.roles?.map((r) => r.roleId));
-                const res = await getRoleListApi({ pageNum: 1, pageSize: 100 });
-                setAllRoles(res.rows?.map((r) => ({ key: String(r.roleId), title: r.roleName })));
-                setAssignRoleOpen(true);
+              {
+                key: 'resetPwd',
+                perm: 'system:user:resetPwd',
+                label: '重置密码',
+                onClick: () => {
+                  setResetPwdUserId(record.userId);
+                  setResetPwdOpen(true);
+                },
               },
-            },
-            {
-              key: 'delete',
-              perm: 'system:user:delete',
-              label: '删除',
-              onClick: async () => {
-                await deleteUserApi(record.userId);
-                message.success('已删除');
-                actionRef.current?.reload();
+              {
+                key: 'assignRole',
+                perm: 'system:user:role-management',
+                label: '分配角色',
+                onClick: async () => {
+                  setAssignRoleUserId(record.userId);
+                  setInitialRoleIds(record.roles?.map((r) => r.roleId));
+                  const res = await getRoleListApi({ pageNum: 1, pageSize: 100 });
+                  setAllRoles(res.rows?.map((r) => ({
+                    key: String(r.roleId),
+                    title: r.roleName,
+                    disabled: demoEnabled && r.roleId === ADMIN_ROLE_ID,
+                  } as any)));
+                  setAssignRoleOpen(true);
+                },
               },
-              confirmTitle: '确定删除吗?',
-            },
+              {
+                key: 'delete',
+                perm: 'system:user:delete',
+                label: '删除',
+                onClick: async () => {
+                  await deleteUserApi(record.userId);
+                  message.success('已删除');
+                  actionRef.current?.reload();
+                },
+                confirmTitle: '确定删除吗?',
+              },
+            ] : []),
           ]}
         />
       ),
@@ -199,7 +216,7 @@ export default function UserManage() {
           mode='multiple'
           placeholder='请选择角色'
           rules={[{ required: true, message: '请选择角色' }]}
-          options={allRoles?.map((r) => ({ value: Number(r.key), label: r.title }))}
+          options={allRoles?.map((r) => ({ value: Number(r.key), label: r.title, disabled: (r as any).disabled }))}
         />
         <ProFormText
           name='nickname'
@@ -281,7 +298,7 @@ export default function UserManage() {
           rules={[{ required: true, message: '请选择角色' }]}
           mode='multiple'
           placeholder='请选择角色'
-          options={allRoles?.map((r) => ({ value: Number(r.key), label: r.title }))}
+          options={allRoles?.map((r) => ({ value: Number(r.key), label: r.title, disabled: (r as any).disabled }))}
         />
       </BaseModalForm>
     </>

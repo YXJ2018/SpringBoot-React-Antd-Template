@@ -2,6 +2,7 @@ package com.base.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.base.admin.common.Constants;
+import com.base.admin.config.DemoGuard;
 import com.base.admin.domain.dto.LoginDTO;
 import com.base.admin.domain.entity.SysRole;
 import com.base.admin.domain.entity.SysUser;
@@ -39,6 +40,7 @@ public class SysLoginServiceImpl implements SysLoginService {
     private final SysRoleMapper roleMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysMenuMapper menuMapper;
+    private final DemoGuard demoGuard;
 
     @Override
     public LoginVO login(LoginDTO dto) {
@@ -96,6 +98,7 @@ public class SysLoginServiceImpl implements SysLoginService {
                 .roles(roleKeys)
                 .permissions(permissions)
                 .menus(menus)
+                .demoEnabled(demoGuard.isEnabled())
                 .build();
     }
 }
