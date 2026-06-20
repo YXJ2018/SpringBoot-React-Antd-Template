@@ -42,6 +42,16 @@ public class SysLoginServiceImpl implements SysLoginService {
 
     @Override
     public LoginVO login(LoginDTO dto) {
+        // 前置检查用户状态，防止被 Spring Security 吞掉具体异常
+        SysUser user = userMapper.selectOne(
+                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, dto.getUsername()));
+        if (user == null) {
+            throw new BusinessException("用户名或密码错误");
+        }
+        if (Integer.valueOf(Constants.STATUS_DISABLED).equals(user.getStatus())) {
+            throw new BusinessException("该账户已被禁用，请联系管理员");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
 

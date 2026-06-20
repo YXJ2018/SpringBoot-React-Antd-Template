@@ -33,10 +33,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         SysUser user = userMapper.selectOne(
                 new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
         if (user == null) {
-            throw new UsernameNotFoundException("User not found: " + username);
+            throw new UsernameNotFoundException("用户不存在: " + username);
         }
         if (Integer.valueOf(Constants.STATUS_DISABLED).equals(user.getStatus())) {
-            throw new UsernameNotFoundException("User is disabled: " + username);
+            throw new UsernameNotFoundException("用户已被禁用，请联系管理员: " + username);
         }
 
         LoginUser loginUser = new LoginUser();
