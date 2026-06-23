@@ -8,6 +8,7 @@ import { getUserListApi, createUserApi, updateUserApi, deleteUserApi, resetPwdAp
 import { getRoleListApi } from '@/api/role';
 import PermissionButton from '@/components/Buttons/PermissionButton';
 import ActionButtons from '@/components/Buttons/ActionButtons';
+import DetailModal from '@/components/DetailModal';
 import dictionary from '@/dictionary';
 import IconStatus from '@/components/IconStatus';
 import type { UserVO } from '@/types/user';
@@ -15,6 +16,7 @@ import type { UserVO } from '@/types/user';
 export default function UserManage() {
   const actionRef = useRef<ActionType>(null);
   const [editingUser, setEditingUser] = useState<UserVO | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [resetPwdOpen, setResetPwdOpen] = useState(false);
   const [resetPwdUserId, setResetPwdUserId] = useState<number>(0);
@@ -27,7 +29,6 @@ export default function UserManage() {
     setEditingUser(user ?? null);
     const res = await getRoleListApi({ pageNum: 1, pageSize: 100 });
     setAllRoles(res.rows?.map((r) => ({ key: String(r.roleId), title: r.roleName })));
-    setModalOpen(true);
   };
 
   const columns: ProColumnType<UserVO>[] = [
@@ -60,7 +61,6 @@ export default function UserManage() {
       dataIndex: 'status',
       width: 80,
       valueType: 'select',
-      initialValue: '',
       fieldProps: {
         options: [{ label: '全部', value: '' }, ...dictionary.userStatus],
       },
@@ -84,7 +84,10 @@ export default function UserManage() {
               key: 'edit',
               perm: 'system:user:edit',
               label: '编辑',
-              onClick: () => openUserModal(record),
+              onClick: () => {
+                openUserModal(record);
+                setModalOpen(true);
+              },
             },
             {
               key: 'resetPwd',
@@ -106,6 +109,15 @@ export default function UserManage() {
                 const res = await getRoleListApi({ pageNum: 1, pageSize: 100 });
                 setAllRoles(res.rows?.map((r) => ({ key: String(r.roleId), title: r.roleName })));
                 setAssignRoleOpen(true);
+              },
+            },
+            // 详情不需要权限
+            {
+              key: 'detail',
+              label: '详情',
+              onClick: () => {
+                openUserModal(record);
+                setDetailOpen(true);
               },
             },
             {
@@ -148,13 +160,29 @@ export default function UserManage() {
             key='add'
             perm='system:user:add'
             type='primary'
-            onClick={() => openUserModal()}
+            onClick={() => {
+              openUserModal();
+              setModalOpen(true);
+            }}
           >
             添加
           </PermissionButton>,
         ]}
       />
 
+      {/* 详情弹窗使用schemaForm组件配置形式 */}
+      <DetailModal
+        title='用户详情'
+        columns={columns as any}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        initialValues={{
+          ...editingUser,
+          roles: editingUser?.roles?.map((r) => r.roleName).join('、'),
+        }}
+      />
+
+      {/* 编辑和新增使用ProForm组件形式 */}
       <BaseModalForm
         title={editingUser ? '编辑用户' : '添加用户'}
         open={modalOpen}
@@ -162,9 +190,8 @@ export default function UserManage() {
         initialValues={
           (editingUser ? { ...editingUser, roleIds: editingUser.roles?.map((r) => r.roleId) } : { status: 0 }) as any
         }
-        modalProps={{ destroyOnHidden: true }}
         grid
-        rowProps={{ gutter: 16 }}
+        rowProps={{ gutter: 32 }}
         colProps={{ span: 12 }}
         onFinish={async (values) => {
           const dto = { ...values } as any;
@@ -231,7 +258,6 @@ export default function UserManage() {
         width={400}
         open={resetPwdOpen}
         onOpenChange={setResetPwdOpen}
-        modalProps={{ destroyOnHidden: true }}
         onFinish={async (values) => {
           await resetPwdApi(resetPwdUserId, values.password);
           message.success('密码已重置');

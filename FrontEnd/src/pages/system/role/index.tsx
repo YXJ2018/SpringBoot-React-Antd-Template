@@ -335,7 +335,6 @@ export default function RoleManage() {
         rowProps={{ gutter: 16 }}
         colProps={{ span: 12 }}
         initialValues={(editingRole || { status: 0, sortOrder: 0 }) as any}
-        modalProps={{ destroyOnHidden: true }}
         onFinish={async (values) => {
           const dto = { ...values } as any;
           if (editingRole) {
