@@ -13,7 +13,7 @@ interface IconPickerProps {
 
 const allIconNames = getIconNames();
 
-export function IconPicker({ value, onChange, style, className }: IconPickerProps) {
+export default function IconPicker({ value, onChange, style, className }: IconPickerProps) {
   const { token } = theme.useToken();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');

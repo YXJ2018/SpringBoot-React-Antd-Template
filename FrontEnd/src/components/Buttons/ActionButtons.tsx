@@ -18,7 +18,7 @@ interface ActionButtonsProps {
   maxVisible?: number;
 }
 
-export function ActionButtons({ items, maxVisible = 3 }: ActionButtonsProps) {
+export default function ActionButtons({ items, maxVisible = 3 }: ActionButtonsProps) {
   const { has } = usePermission();
   const [activeConfirm, setActiveConfirm] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);

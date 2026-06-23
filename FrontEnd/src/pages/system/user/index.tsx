@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import type { ActionType, ProColumnType } from '@ant-design/pro-components';
-import { BaseProTable } from '@/components/BaseProTable';
-import { BaseModalForm } from '@/components/BaseModalForm/index';
+import BaseProTable from '@/components/BaseProTable';
+import BaseModalForm from '@/components/BaseModalForm/index';
 import { message, Tag } from 'antd';
 import { getUserListApi, createUserApi, updateUserApi, deleteUserApi, resetPwdApi, assignRolesApi } from '@/api/user';
 import { getRoleListApi } from '@/api/role';
-import { PermissionButton } from '@/components/PermissionButton';
-import { ActionButtons } from '@/components/ActionButtons';
+import PermissionButton from '@/components/Buttons/PermissionButton';
+import ActionButtons from '@/components/Buttons/ActionButtons';
 import dictionary from '@/dictionary';
 import IconStatus from '@/components/IconStatus';
 import type { UserVO } from '@/types/user';

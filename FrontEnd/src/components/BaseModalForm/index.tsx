@@ -20,7 +20,7 @@ const defaultModalProps = {
  * @param props 和ModalForm保持一致
  * @returns ModalForm
  */
-export function BaseModalForm<T = Record<string, any>, U = Record<string, any>>(props: ModalFormProps<T, U>) {
+export default function BaseModalForm<T = Record<string, any>, U = Record<string, any>>(props: ModalFormProps<T, U>) {
   const callerModalProps = props.modalProps ?? {};
 
   const mergedModalProps = {

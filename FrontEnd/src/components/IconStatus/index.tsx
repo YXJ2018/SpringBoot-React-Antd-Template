@@ -34,7 +34,7 @@ export default function IconStatus({ type, value, style }: Props) {
     <div
       className={`inline-flex items-center rounded-full px-2.5 py-1.25 text-xs font-medium gap-1`}
       style={{ backgroundColor: color + '20', color }}
-      title={option?.label}
+      title={option?.label as any}
     >
       {renderIcon()}
       <span>{option?.label}</span>

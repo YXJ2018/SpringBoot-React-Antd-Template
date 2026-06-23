@@ -29,9 +29,9 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 import { getMenuTreeApi, getMenuListApi, createMenuApi, updateMenuApi, deleteMenuApi } from '@/api/menu';
-import { PermissionButton } from '@/components/PermissionButton';
+import PermissionButton from '@/components/Buttons/PermissionButton';
 import type { MenuVO, MenuTree } from '@/types/menu';
-import { IconPicker } from '@/components/IconPicker';
+import IconPicker from '@/components/IconPicker';
 import styles from './index.module.css';
 
 const menuTypeMap: Record<string, { text: string; color: string; icon: ReactNode }> = {

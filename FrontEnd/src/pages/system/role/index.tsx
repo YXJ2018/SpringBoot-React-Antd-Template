@@ -11,8 +11,8 @@ import {
   getRoleByIdApi,
 } from '@/api/role';
 import { getMenuTreeApi } from '@/api/menu';
-import { PermissionButton } from '@/components/PermissionButton';
-import { BaseModalForm } from '@/components/BaseModalForm';
+import PermissionButton from '@/components/Buttons/PermissionButton';
+import BaseModalForm from '@/components/BaseModalForm';
 import type { RoleVO } from '@/types/role';
 import type { MenuTree } from '@/types/menu';
 import dictionary from '../../../dictionary';

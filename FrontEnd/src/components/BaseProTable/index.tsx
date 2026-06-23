@@ -6,7 +6,9 @@ import type { ParamsType, ProTableProps } from '@ant-design/pro-components';
  * @param props 与原本ProTable保持一致
  * @returns ProTable
  */
-export function BaseProTable<T extends Record<string, any>, U extends ParamsType = any>(props: ProTableProps<T, U>) {
+export default function BaseProTable<T extends Record<string, any>, U extends ParamsType = any>(
+  props: ProTableProps<T, U>,
+) {
   return (
     <ProTable<T, U>
       options={false}
