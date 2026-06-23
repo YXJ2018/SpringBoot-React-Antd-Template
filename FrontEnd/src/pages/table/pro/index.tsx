@@ -70,7 +70,7 @@ const App: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <ProCard>
-        <div className='text-xl font-medium mb-3'>高级表格示例</div>
+        <div className='mb-3 text-xl font-medium'>高级表格示例</div>
         <div className='text-gray-500'>
           当你的表格需要与服务端进行交互或者需要多种单元格样式时，ProTable 是不二选择。
         </div>

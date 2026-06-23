@@ -255,7 +255,7 @@ const App: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <ProCard>
-        <div className='text-lg font-medium mb-3'>Json-Schema表单示例</div>
+        <div className='mb-3 text-lg font-medium'>Json-Schema表单示例</div>
         <div className='text-gray-500'>
           SchemaForm 是根据 JSON Schema 来生成表单的工具。SchemaForm 会根据 valueType 来映射成不同的表单项。
         </div>

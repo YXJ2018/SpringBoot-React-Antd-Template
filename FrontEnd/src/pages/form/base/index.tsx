@@ -20,7 +20,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 const App: React.FC = () => (
   <div className='flex flex-col gap-5'>
     <ProCard>
-      <div className='text-xl font-medium mb-3'>基础表单示例</div>
+      <div className='mb-3 text-xl font-medium'>基础表单示例</div>
       <div className='text-gray-500'>高性能表单控件，自带数据域管理。包含数据录入、校验以及对应样式。</div>
       <div className='text-gray-500'>基本的表单数据域控制展示，包含布局、初始化、验证、提交。</div>
     </ProCard>

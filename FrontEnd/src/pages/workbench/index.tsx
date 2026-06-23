@@ -178,16 +178,16 @@ export default function Workbench() {
   return (
     <div className='flex flex-col gap-4'>
       {/* ── 顶部统计卡片 ── */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4'>
         <Card>
           <div className='flex items-start gap-4'>
             <Statistic
               title={
-                <div className='flex items-center gap-x-2 flex-wrap'>
-                  <div className='flex items-center justify-center w-11 h-11 rounded-xl bg-blue-50 shrink-0'>
+                <div className='flex flex-wrap items-center gap-x-2'>
+                  <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50'>
                     <DollarOutlined style={{ color: '#3b82f6', fontSize: '18px' }} />
                   </div>
-                  <span className='text-gray-500 font-medium'>今日销售额</span>
+                  <span className='font-medium text-gray-500'>今日销售额</span>
                 </div>
               }
               value={salesValue}
@@ -195,8 +195,8 @@ export default function Workbench() {
               prefix={<span className='text-base'>￥</span>}
               suffix={
                 <div className='flex'>
-                  <span className='text-gray-400 text-sm font-normal ml-1'>较昨日</span>
-                  <span className='text-green-500 text-sm font-normal ml-1'>
+                  <span className='ml-1 text-sm font-normal text-gray-400'>较昨日</span>
+                  <span className='ml-1 text-sm font-normal text-green-500'>
                     <ArrowUpOutlined /> 8.2%
                   </span>
                 </div>
@@ -210,14 +210,14 @@ export default function Workbench() {
           <div className='flex items-start gap-4'>
             <Statistic
               title={
-                <div className='flex items-center gap-x-2 flex-wrap'>
+                <div className='flex flex-wrap items-center gap-x-2'>
                   <div
-                    className='flex items-center justify-center w-11 h-11 rounded-xl shrink-0'
+                    className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl'
                     style={{ backgroundColor: colorPrimaryBg }}
                   >
                     <InboxOutlined style={{ color: '#06b6d4', fontSize: '18px' }} />
                   </div>
-                  <span className='text-gray-500 font-medium'>库存金额</span>
+                  <span className='font-medium text-gray-500'>库存金额</span>
                 </div>
               }
               value={stockValue}
@@ -232,15 +232,15 @@ export default function Workbench() {
           <div className='flex items-start gap-4'>
             <Statistic
               title={
-                <div className='flex items-center gap-x-2 flex-wrap'>
-                  <div className='flex items-center justify-center w-11 h-11 rounded-xl bg-orange-50 shrink-0'>
+                <div className='flex flex-wrap items-center gap-x-2'>
+                  <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-50'>
                     <SyncOutlined style={{ color: '#f97316', fontSize: '18px' }} />
                   </div>
-                  <span className='text-gray-500 font-medium'>周转天数</span>
+                  <span className='font-medium text-gray-500'>周转天数</span>
                 </div>
               }
               value={32}
-              suffix={<span className='text-gray-400 text-sm font-normal'>天</span>}
+              suffix={<span className='text-sm font-normal text-gray-400'>天</span>}
               styles={{ content: { fontSize: 26, fontWeight: 700 } }}
             />
           </div>
@@ -250,11 +250,11 @@ export default function Workbench() {
           <div className='flex items-start gap-4'>
             <Statistic
               title={
-                <div className='flex items-center gap-x-2 flex-wrap'>
-                  <div className='flex items-center justify-center w-11 h-11 rounded-xl bg-purple-50 shrink-0'>
+                <div className='flex flex-wrap items-center gap-x-2'>
+                  <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-50'>
                     <MoneyCollectOutlined style={{ color: '#a855f7', fontSize: '18px' }} />
                   </div>
-                  <span className='text-gray-500 font-medium'>待回款</span>
+                  <span className='font-medium text-gray-500'>待回款</span>
                 </div>
               }
               value={collectValue}
@@ -272,8 +272,8 @@ export default function Workbench() {
         className='rounded-xl!'
         styles={{ body: { padding: '12px 24px' } }}
       >
-        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6'>
-          <div className='flex items-center gap-2 text-gray-600 font-medium text-sm shrink-0'>
+        <div className='flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6'>
+          <div className='flex shrink-0 items-center gap-2 text-sm font-medium text-gray-600'>
             <WarningOutlined style={{ color: 'var(--color-orange-400)' }} />
             <span>待处理预警</span>
           </div>
@@ -288,9 +288,9 @@ export default function Workbench() {
                   color={item.color}
                   overflowCount={99}
                 />
-                <span className='text-gray-600 text-sm'>
+                <span className='text-sm text-gray-600'>
                   {item.label}
-                  {item.suffix && <span className='text-gray-400 ml-0.5'>{item.suffix}</span>}
+                  {item.suffix && <span className='ml-0.5 text-gray-400'>{item.suffix}</span>}
                 </span>
               </div>
             ))}
@@ -299,7 +299,7 @@ export default function Workbench() {
       </Card>
 
       {/* ── 趋势图 + 库存预警 ── */}
-      <div className='grid grid-cols-1 lg:grid-cols-12 gap-4'>
+      <div className='grid grid-cols-1 gap-4 lg:grid-cols-12'>
         <Card
           className='rounded-xl! lg:col-span-7'
           title={
@@ -324,11 +324,11 @@ export default function Workbench() {
           }
         >
           {/* header */}
-          <div className='flex items-center text-xs text-gray-400 pb-2 border-b border-gray-100 mb-2'>
-            <span className='flex-1 min-w-0'>SKU / 名称</span>
-            <span className='w-14 sm:w-16 text-center'>当前</span>
-            <span className='w-14 sm:w-16 text-center'>安全</span>
-            <span className='w-14 sm:w-16 text-center'>建议采购</span>
+          <div className='mb-2 flex items-center border-b border-gray-100 pb-2 text-xs text-gray-400'>
+            <span className='min-w-0 flex-1'>SKU / 名称</span>
+            <span className='w-14 text-center sm:w-16'>当前</span>
+            <span className='w-14 text-center sm:w-16'>安全</span>
+            <span className='w-14 text-center sm:w-16'>建议采购</span>
           </div>
           {/* rows */}
           {inventoryWarnings.map((item, idx) => (
@@ -338,13 +338,13 @@ export default function Workbench() {
                 idx < inventoryWarnings.length - 1 ? 'border-b border-gray-50' : ''
               }`}
             >
-              <div className='flex-1 min-w-0'>
+              <div className='min-w-0 flex-1'>
                 <div className='text-xs text-gray-400'>{item.sku}</div>
                 <div className='truncate text-gray-700'>{item.name}</div>
               </div>
-              <span className='w-14 sm:w-16 text-center text-red-500 font-semibold'>{item.current}</span>
-              <span className='w-14 sm:w-16 text-center text-gray-500'>{item.safe}</span>
-              <span className='w-14 sm:w-16 text-center'>
+              <span className='w-14 text-center font-semibold text-red-500 sm:w-16'>{item.current}</span>
+              <span className='w-14 text-center text-gray-500 sm:w-16'>{item.safe}</span>
+              <span className='w-14 text-center sm:w-16'>
                 <Tag color='blue'>{item.suggest}</Tag>
               </span>
             </div>
@@ -353,7 +353,7 @@ export default function Workbench() {
       </div>
 
       {/* ── 待办任务 + 畅销商品 ── */}
-      <div className='grid grid-cols-1 lg:grid-cols-12 gap-4'>
+      <div className='grid grid-cols-1 gap-4 lg:grid-cols-12'>
         <Card
           className='rounded-xl! lg:col-span-7'
           title={
@@ -371,14 +371,14 @@ export default function Workbench() {
             {tasks.map((item) => (
               <div
                 key={item.id}
-                className='flex items-center justify-between py-2.5 gap-2'
+                className='flex items-center justify-between gap-2 py-2.5'
               >
                 <Checkbox
                   checked={item.done}
                   onChange={() => handleToggle(item.id)}
                   className='min-w-0'
                 >
-                  <span className={item.done ? 'line-through text-gray-300' : 'text-gray-700'}>{item.text}</span>
+                  <span className={item.done ? 'text-gray-300 line-through' : 'text-gray-700'}>{item.text}</span>
                 </Checkbox>
                 <Button
                   type='link'
@@ -415,10 +415,10 @@ export default function Workbench() {
         styles={{ body: { padding: '12px 24px' } }}
       >
         <div className='flex flex-wrap items-center gap-x-4 gap-y-3'>
-          <span className='text-gray-500 text-sm font-medium shrink-0'>快捷入口</span>
+          <span className='shrink-0 text-sm font-medium text-gray-500'>快捷入口</span>
           <Divider
             orientation='vertical'
-            className='hidden sm:block h-5!'
+            className='hidden h-5! sm:block'
           />
           {shortcuts.map((s) => (
             <Button

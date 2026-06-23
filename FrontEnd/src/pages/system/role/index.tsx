@@ -112,7 +112,7 @@ export default function RoleManage() {
 
   return (
     <div
-      className='flex gap-4 h-full'
+      className='flex h-full gap-4'
       style={{ height: 'calc(100vh - 100px)' }}
     >
       <Card
@@ -148,14 +148,14 @@ export default function RoleManage() {
           renderItem={(role) => (
             <List.Item
               key={role.roleId}
-              className='cursor-pointer  px-3 py-2 mb-1 border-l-4'
+              className='mb-1 cursor-pointer border-l-4 px-3 py-2'
               style={{
                 backgroundColor: selectedRole?.roleId === role.roleId ? token.colorPrimaryBg : 'transparent',
                 borderLeftColor: selectedRole?.roleId === role.roleId ? token.colorPrimary : 'transparent',
               }}
               onClick={() => handleSelectRole(role)}
             >
-              <div className='flex items-center justify-between w-full'>
+              <div className='flex w-full items-center justify-between'>
                 <div className='flex items-center gap-2'>
                   <UserOutlined
                     style={{
@@ -164,7 +164,7 @@ export default function RoleManage() {
                     }}
                   />
                   <div>
-                    <div className='font-medium text-sm'>{role.roleName}</div>
+                    <div className='text-sm font-medium'>{role.roleName}</div>
                     <div className='text-xs text-gray-400'>{role.roleKey}</div>
                   </div>
                 </div>
@@ -239,8 +239,8 @@ export default function RoleManage() {
         }
       >
         {selectedRole ? (
-          <div className='flex flex-col flex-1 overflow-hidden'>
-            <div className='mb-3 pb-3 border-b border-gray-100'>
+          <div className='flex flex-1 flex-col overflow-hidden'>
+            <div className='mb-3 border-b border-gray-100 pb-3'>
               <div className='flex items-center gap-2 text-sm'>
                 <span className='text-gray-500'>正在为</span>
                 <span className='font-semibold text-gray-800'>{selectedRole.roleName}</span>
@@ -296,7 +296,7 @@ export default function RoleManage() {
               />
             </div>
             <div
-              className='mt-auto border-t border-gray-100 flex justify-end'
+              className='mt-auto flex justify-end border-t border-gray-100'
               style={{ padding: '12px 0 4px 0px' }}
             >
               <Space>

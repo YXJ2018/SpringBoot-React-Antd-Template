@@ -29,10 +29,10 @@ function convertMenusToRoute(menus: MenuTree[], parentPath = ''): any[] {
 
 const HeaderLogo = (
   <div
-    className='flex items-center justify-center w-8 h-8 rounded'
+    className='flex h-8 w-8 items-center justify-center rounded'
     style={{ background: 'linear-gradient(135deg, var(--ant-color-primary), var(--ant-color-primary-hover))' }}
   >
-    <span className='text-white text-base font-bold'>B</span>
+    <span className='text-base font-bold text-white'>B</span>
   </div>
 );
 
@@ -122,7 +122,7 @@ export default function BasicLayout() {
       menuFooterRender={() => {
         return (
           <div
-            className='flex gap-2 h-10 justify-center items-center border-t border-gray-100'
+            className='flex h-10 items-center justify-center gap-2 border-t border-gray-100'
             onClick={() => setCollapsed(!collapsed)}
           >
             {collapsed ? (

@@ -37,7 +37,7 @@ export default function IconPicker({ value, onChange, style, className }: IconPi
       placement='bottomLeft'
       styles={{ content: { width: 400, maxHeight: 360, overflow: 'hidden', padding: 0 } }}
       content={
-        <div className='flex flex-col h-90'>
+        <div className='flex h-90 flex-col'>
           <div className='px-3 pt-3 pb-2'>
             <Input
               prefix={<SearchOutlined className='text-[#999]' />}
@@ -61,7 +61,7 @@ export default function IconPicker({ value, onChange, style, className }: IconPi
                       placement='top'
                     >
                       <div
-                        className={`flex flex-col items-center justify-center rounded cursor-pointer py-2 ${isSelected ? '' : 'hover:bg-gray-50'}`}
+                        className={`flex cursor-pointer flex-col items-center justify-center rounded py-2 ${isSelected ? '' : 'hover:bg-gray-50'}`}
                         style={
                           isSelected ? { backgroundColor: token.colorPrimaryBg, color: token.colorPrimary } : undefined
                         }
@@ -73,7 +73,7 @@ export default function IconPicker({ value, onChange, style, className }: IconPi
                       >
                         {/* 使用createElement形式避免重复渲染 */}
                         {createElement(IconComp, { className: 'text-xl' })}
-                        <span className='text-[10px] mt-1 truncate w-full text-center'>
+                        <span className='mt-1 w-full truncate text-center text-[10px]'>
                           {name.replace('Outlined', '')}
                         </span>
                       </div>
@@ -93,7 +93,7 @@ export default function IconPicker({ value, onChange, style, className }: IconPi
       }
     >
       <div
-        className={`flex items-center gap-2 border border-gray-300 rounded px-3 py-1 cursor-pointer hover:border-primary min-w-50${className ? ` ${className}` : ''}`}
+        className={`hover:border-primary flex cursor-pointer items-center gap-2 rounded border border-gray-300 px-3 py-1 min-w-50${className ? ` ${className}` : ''}`}
         onClick={() => setOpen(!open)}
       >
         {SelectedIcon ? (
@@ -103,7 +103,7 @@ export default function IconPicker({ value, onChange, style, className }: IconPi
             <span className='text-sm'>{value}</span>
           </>
         ) : (
-          <span className='text-[#999] text-sm'>请选择图标</span>
+          <span className='text-sm text-[#999]'>请选择图标</span>
         )}
       </div>
     </Popover>

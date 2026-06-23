@@ -58,7 +58,7 @@ const App: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <ProCard>
-        <div className='text-xl font-medium mb-3'>可拖拽表格示例</div>
+        <div className='mb-3 text-xl font-medium'>可拖拽表格示例</div>
         <div className='text-gray-500'>
           DragSortTable排序采用的dnd-kit，需要提供rowKey来确定数据的唯一值，否则不能正常工作。
         </div>

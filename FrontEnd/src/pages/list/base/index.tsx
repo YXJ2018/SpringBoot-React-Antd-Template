@@ -71,7 +71,7 @@ const App: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <ProCard>
-        <div className='text-xl font-medium mb-3'>基础列表示例</div>
+        <div className='mb-3 text-xl font-medium'>基础列表示例</div>
         <div className='text-gray-500'>最基础的列表展示，可承载文字、列表、图片、段落，常用于后台数据展示页面。</div>
       </ProCard>
       <ProCard styles={{ body: { paddingTop: '40px' } }}>
