@@ -2,13 +2,13 @@ package com.base.admin.service;
 
 import com.base.admin.common.PageResult;
 import com.base.admin.domain.dto.UserDTO;
+import com.base.admin.domain.dto.UserPageQueryDTO;
 import com.base.admin.domain.dto.UserRoleDTO;
 import com.base.admin.domain.vo.UserVO;
 
 public interface SysUserService {
 
-    PageResult<UserVO> list(String username, String nickname, String phone, Integer status,
-                            Integer pageNum, Integer pageSize);
+    PageResult<UserVO> list(UserPageQueryDTO query);
 
     UserVO getById(Long userId);
 

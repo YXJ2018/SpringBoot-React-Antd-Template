@@ -5,6 +5,7 @@ import com.base.admin.annotation.RequiresPermission;
 import com.base.admin.common.PageResult;
 import com.base.admin.common.Result;
 import com.base.admin.domain.dto.UserDTO;
+import com.base.admin.domain.dto.UserPageQueryDTO;
 import com.base.admin.domain.dto.UserRoleDTO;
 import com.base.admin.domain.vo.UserVO;
 import com.base.admin.service.SysUserService;
@@ -21,16 +22,10 @@ public class SysUserController {
 
     private final SysUserService userService;
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     @RequiresPermission("system:user:list")
-    public Result<PageResult<UserVO>> list(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String nickname,
-            @RequestParam(required = false) String phone,
-            @RequestParam(required = false) Integer status,
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-        return Result.ok(userService.list(username, nickname, phone, status, pageNum, pageSize));
+    public Result<PageResult<UserVO>> list(@Valid @RequestBody UserPageQueryDTO query) {
+        return Result.ok(userService.list(query));
     }
 
     @GetMapping("/{userId}")

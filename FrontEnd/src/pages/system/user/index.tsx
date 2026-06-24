@@ -11,6 +11,7 @@ import ActionButtons from '@/components/Buttons/ActionButtons';
 import TableModal from '@/components/TableModal';
 import dictionary from '@/dictionary';
 import IconStatus from '@/components/IconStatus';
+import tools from '@/utils/tools';
 import type { UserVO } from '@/types/user';
 
 export default function UserManage() {
@@ -24,9 +25,11 @@ export default function UserManage() {
   const [assignRoleUserId, setAssignRoleUserId] = useState<number>(0);
   const [initialRoleIds, setInitialRoleIds] = useState<number[]>([]);
   const [allRoles, setAllRoles] = useState<{ key: string; title: string }[]>([]);
+  const [formModalKey, setFormModalKey] = useState(0);
 
   const openUserModal = async (user?: UserVO) => {
     setEditingUser(user ?? null);
+    setFormModalKey((k) => k + 1);
   };
 
   /** 页面挂载时预加载角色列表，避免弹窗打开时下拉数据为空 */
@@ -180,8 +183,6 @@ export default function UserManage() {
                 onClick: async () => {
                   setAssignRoleUserId(record.userId);
                   setInitialRoleIds(record.roles?.map((r) => r.roleId));
-                  const res = await getRoleListApi({ pageNum: 1, pageSize: 100 });
-                  setAllRoles(res.rows?.map((r) => ({ key: String(r.roleId), title: r.roleName })));
                   setAssignRoleOpen(true);
                 },
               },
@@ -220,12 +221,8 @@ export default function UserManage() {
         rowKey='userId'
         search={{ labelWidth: 'auto' }}
         request={async (params) => {
-          const res = await getUserListApi({
-            pageNum: params.current,
-            pageSize: params.pageSize,
-            ...params,
-          });
-          return { data: res.rows, total: res.total, success: true };
+          const { rows: data, total } = await getUserListApi(tools.handleSearchParams(params));
+          return { data, total, success: true };
         }}
         columns={columns}
         toolBarRender={() => [
@@ -245,6 +242,7 @@ export default function UserManage() {
 
       {/* 新增 / 编辑 — 与详情共用 columns，TableModal 自动过滤 option 列 */}
       <TableModal
+        key={formModalKey}
         readonly={false}
         title={editingUser ? '编辑用户' : '添加用户'}
         columns={columns as any}

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.admin.common.PageResult;
 import com.base.admin.domain.dto.UserDTO;
+import com.base.admin.domain.dto.UserPageQueryDTO;
 import com.base.admin.domain.dto.UserRoleDTO;
 import com.base.admin.domain.entity.SysRole;
 import com.base.admin.domain.entity.SysUser;
@@ -34,16 +35,27 @@ public class SysUserServiceImpl implements SysUserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public PageResult<UserVO> list(String username, String nickname, String phone, Integer status,
-                                   Integer pageNum, Integer pageSize) {
+    public PageResult<UserVO> list(UserPageQueryDTO query) {
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StringUtils.hasText(username), SysUser::getUsername, username)
-                .like(StringUtils.hasText(nickname), SysUser::getNickname, nickname)
-                .like(StringUtils.hasText(phone), SysUser::getPhone, phone)
-                .eq(status != null, SysUser::getStatus, status)
+        wrapper.like(StringUtils.hasText(query.getUsername()), SysUser::getUsername, query.getUsername())
+                .like(StringUtils.hasText(query.getNickname()), SysUser::getNickname, query.getNickname())
+                .like(StringUtils.hasText(query.getPhone()), SysUser::getPhone, query.getPhone())
+                .like(StringUtils.hasText(query.getEmail()), SysUser::getEmail, query.getEmail())
+                .eq(query.getStatus() != null, SysUser::getStatus, query.getStatus())
                 .orderByDesc(SysUser::getCreateTime);
 
-        Page<SysUser> page = userMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        if (query.getRoleIds() != null && !query.getRoleIds().isEmpty()) {
+            List<Long> userIds = userRoleMapper.selectList(
+                    new LambdaQueryWrapper<SysUserRole>().in(SysUserRole::getRoleId, query.getRoleIds()))
+                    .stream().map(SysUserRole::getUserId).distinct().collect(Collectors.toList());
+            if (userIds.isEmpty()) {
+                return new PageResult<>(0L, List.of());
+            }
+            wrapper.in(SysUser::getUserId, userIds);
+        }
+
+        Page<SysUser> page = userMapper.selectPage(
+                new Page<>(query.getPageNum(), query.getPageSize()), wrapper);
         List<UserVO> rows = page.getRecords().stream().map(this::toUserVO).collect(Collectors.toList());
         return new PageResult<>(page.getTotal(), rows);
     }

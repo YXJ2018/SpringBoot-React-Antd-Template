@@ -2,8 +2,8 @@ import request from './request';
 import type { PageResult, PageQuery } from '@/types/api';
 import type { UserVO, UserDTO } from '@/types/user';
 
-export function getUserListApi(params: PageQuery & { username?: string; nickname?: string; phone?: string; status?: number }) {
-  return request.get<unknown, PageResult<UserVO>>('/system/user/list', { params });
+export function getUserListApi(data: PageQuery & { username?: string; nickname?: string; phone?: string; email?: string; roleIds?: number[]; status?: number }) {
+  return request.post<unknown, PageResult<UserVO>>('/system/user/list', data);
 }
 
 export function getUserByIdApi(userId: number) {
