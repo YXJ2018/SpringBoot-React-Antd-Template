@@ -8,6 +8,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Slf4j
 @RestControllerAdvice
@@ -45,6 +46,11 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .orElse("Validation failed");
         return Result.fail(message);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result<Void> handleMaxUploadSize(MaxUploadSizeExceededException e) {
+        return Result.fail("文件大小超出限制，最大允许10MB");
     }
 
     @ExceptionHandler(Exception.class)

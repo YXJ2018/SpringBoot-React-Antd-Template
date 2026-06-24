@@ -4,7 +4,9 @@ import com.base.admin.common.PageResult;
 import com.base.admin.domain.dto.UserDTO;
 import com.base.admin.domain.dto.UserPageQueryDTO;
 import com.base.admin.domain.dto.UserRoleDTO;
+import com.base.admin.domain.vo.UserImportResultVO;
 import com.base.admin.domain.vo.UserVO;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface SysUserService {
 
@@ -23,4 +25,6 @@ public interface SysUserService {
     void changeStatus(Long userId, Integer status);
 
     void assignRoles(UserRoleDTO dto);
+
+    UserImportResultVO importUsers(MultipartFile file);
 }

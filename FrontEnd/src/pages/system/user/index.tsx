@@ -4,7 +4,14 @@ import type { ActionType, ProColumnType } from '@ant-design/pro-components';
 import BaseProTable from '@/components/BaseProTable';
 import BaseModalForm from '@/components/BaseModalForm/index';
 import { message, Tag } from 'antd';
-import { getUserListApi, createUserApi, updateUserApi, deleteUserApi, resetPwdApi, assignRolesApi } from '@/api/user';
+import {
+  getUserListApi,
+  createUserApi,
+  updateUserApi,
+  deleteUserApi,
+  resetPwdApi,
+  assignRolesApi,
+} from '@/api/user';
 import { getRoleListApi } from '@/api/role';
 import PermissionButton from '@/components/Buttons/PermissionButton';
 import ActionButtons from '@/components/Buttons/ActionButtons';
@@ -14,6 +21,7 @@ import IconStatus from '@/components/IconStatus';
 import tools from '@/utils/tools';
 import validate from '@/utils/validate';
 import type { UserVO } from '@/types/user';
+import ImportUserModal from './components/ImportUserModal';
 
 export default function UserManage() {
   const actionRef = useRef<ActionType>(null);
@@ -27,6 +35,7 @@ export default function UserManage() {
   const [initialRoleIds, setInitialRoleIds] = useState<number[]>([]);
   const [allRoles, setAllRoles] = useState<{ key: string; title: string }[]>([]);
   const [formModalKey, setFormModalKey] = useState(0);
+  const [importOpen, setImportOpen] = useState(false);
 
   const openUserModal = async (user?: UserVO) => {
     setEditingUser(user ?? null);
@@ -228,6 +237,15 @@ export default function UserManage() {
         columns={columns}
         toolBarRender={() => [
           <PermissionButton
+            key='import'
+            color='default'
+            variant='filled'
+            perm='system:user:import'
+            onClick={() => setImportOpen(true)}
+          >
+            批量导入
+          </PermissionButton>,
+          <PermissionButton
             key='add'
             perm='system:user:add'
             type='primary'
@@ -340,6 +358,12 @@ export default function UserManage() {
           options={allRoles?.map((r) => ({ value: Number(r.key), label: r.title }))}
         />
       </BaseModalForm>
+      {/* 批量导入 */}
+      <ImportUserModal
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onSuccess={() => actionRef.current?.reload()}
+      />
     </>
   );
 }

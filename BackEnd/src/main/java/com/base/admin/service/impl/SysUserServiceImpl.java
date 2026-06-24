@@ -4,14 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.admin.common.PageResult;
 import com.base.admin.domain.dto.UserDTO;
+import com.base.admin.domain.dto.UserExcelRowDTO;
 import com.base.admin.domain.dto.UserPageQueryDTO;
 import com.base.admin.domain.dto.UserRoleDTO;
 import com.base.admin.domain.entity.SysRole;
 import com.base.admin.domain.entity.SysUser;
 import com.base.admin.domain.entity.SysUserRole;
 import com.base.admin.domain.vo.RoleSimpleVO;
+import com.base.admin.domain.vo.UserImportResultVO;
 import com.base.admin.domain.vo.UserVO;
 import com.base.admin.exception.BusinessException;
+import com.base.admin.listener.UserExcelListener;
 import com.base.admin.mapper.SysRoleMapper;
 import com.base.admin.mapper.SysUserMapper;
 import com.base.admin.mapper.SysUserRoleMapper;
@@ -21,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -142,6 +146,30 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     public void assignRoles(UserRoleDTO dto) {
         saveUserRoles(dto.getUserId(), dto.getRoleIds());
+    }
+
+    @Override
+    @Transactional
+    public UserImportResultVO importUsers(MultipartFile file) {
+        UserExcelListener listener = new UserExcelListener(userMapper, passwordEncoder);
+        try {
+            com.alibaba.excel.EasyExcel.read(file.getInputStream(), UserExcelRowDTO.class, listener)
+                    .sheet().doRead();
+        } catch (Exception e) {
+            throw new BusinessException("Excel解析失败: " + e.getMessage());
+        }
+
+        List<SysUser> validUsers = listener.getValidUsers();
+        for (SysUser user : validUsers) {
+            userMapper.insert(user);
+        }
+
+        UserImportResultVO result = new UserImportResultVO();
+        result.setTotalCount(listener.getTotalCount());
+        result.setSuccessCount(validUsers.size());
+        result.setFailureCount(listener.getErrors().size());
+        result.setErrors(listener.getErrors());
+        return result;
     }
 
     private void saveUserRoles(Long userId, List<Long> roleIds) {
