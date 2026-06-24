@@ -12,6 +12,7 @@ import TableModal from '@/components/TableModal';
 import dictionary from '@/dictionary';
 import IconStatus from '@/components/IconStatus';
 import tools from '@/utils/tools';
+import validate from '@/utils/validate';
 import type { UserVO } from '@/types/user';
 
 export default function UserManage() {
@@ -53,7 +54,7 @@ export default function UserManage() {
         title: '用户名',
         dataIndex: 'username',
         hideInTable: true,
-        formItemProps: { rules: [{ required: true, message: '请输入用户名' }] },
+        formItemProps: { rules: validate.username },
         fieldProps: editingUser ? { disabled: true } : undefined,
         search: false,
       },
@@ -65,13 +66,13 @@ export default function UserManage() {
               valueType: 'password',
               hideInTable: true,
               search: false,
-              formItemProps: { rules: [{ required: true, message: '请输入密码' }] },
+              formItemProps: { rules: validate.password },
             } as ProColumnType<UserVO>,
           ]
         : []),
       { title: '昵称', dataIndex: 'nickname', width: 100, ellipsis: true },
-      { title: '手机号', dataIndex: 'phone', width: 140 },
-      { title: '邮箱', dataIndex: 'email', width: 140 },
+      { title: '手机号', dataIndex: 'phone', width: 140, formItemProps: { rules: validate.phone } },
+      { title: '邮箱', dataIndex: 'email', width: 140, formItemProps: { rules: validate.email } },
       {
         title: '角色',
         dataIndex: 'roles',
