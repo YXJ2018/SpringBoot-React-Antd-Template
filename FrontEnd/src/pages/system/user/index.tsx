@@ -1,14 +1,15 @@
-import { useRef, useState, useMemo, useEffect } from 'react';
+import { useRef, useState, useMemo, useEffect, type Key } from 'react';
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import type { ActionType, ProColumnType } from '@ant-design/pro-components';
 import BaseProTable from '@/components/BaseProTable';
 import BaseModalForm from '@/components/BaseModalForm/index';
-import { message, Tag } from 'antd';
+import { message, Tag, Modal } from 'antd';
 import {
   getUserListApi,
   createUserApi,
   updateUserApi,
   deleteUserApi,
+  deleteUserBatchApi,
   resetPwdApi,
   assignRolesApi,
 } from '@/api/user';
@@ -36,6 +37,7 @@ export default function UserManage() {
   const [allRoles, setAllRoles] = useState<{ key: string; title: string }[]>([]);
   const [formModalKey, setFormModalKey] = useState(0);
   const [importOpen, setImportOpen] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
 
   const openUserModal = async (user?: UserVO) => {
     setEditingUser(user ?? null);
@@ -235,6 +237,10 @@ export default function UserManage() {
           return { data, total, success: true };
         }}
         columns={columns}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: setSelectedRowKeys,
+        }}
         toolBarRender={() => [
           <PermissionButton
             key='import'
@@ -244,6 +250,33 @@ export default function UserManage() {
             onClick={() => setImportOpen(true)}
           >
             批量导入
+          </PermissionButton>,
+          <PermissionButton
+            key='del'
+            color='danger'
+            variant='filled'
+            perm='system:user:delete'
+            onClick={() => {
+              if (selectedRowKeys.length === 0) {
+                message.warning('请先选择要删除的用户');
+                return;
+              }
+              Modal.confirm({
+                title: '批量删除用户',
+                content: `确定要删除选中的 ${selectedRowKeys.length} 个用户吗？此操作不可撤销。`,
+                okText: '确定删除',
+                cancelText: '取消',
+                okButtonProps: { danger: true },
+                onOk: async () => {
+                  await deleteUserBatchApi(selectedRowKeys as number[]);
+                  message.success(`已删除 ${selectedRowKeys.length} 个用户`);
+                  setSelectedRowKeys([]);
+                  actionRef.current?.reload();
+                },
+              });
+            }}
+          >
+            批量删除
           </PermissionButton>,
           <PermissionButton
             key='add'

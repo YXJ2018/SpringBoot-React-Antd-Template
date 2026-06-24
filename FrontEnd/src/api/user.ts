@@ -23,6 +23,10 @@ export function deleteUserApi(userId: number) {
   return request.delete(`/system/user/${userId}`);
 }
 
+export function deleteUserBatchApi(ids: number[]) {
+  return request.delete('/system/user/batch', { data: ids });
+}
+
 export function resetPwdApi(userId: number, password: string) {
   return request.put('/system/user/resetPwd', { userId, password });
 }

@@ -52,7 +52,7 @@ export default function ImportUserModal({ open, onOpenChange, onSuccess }: Impor
         }
       }}
       submitter={false}
-      modalProps={{ destroyOnHidden: true, mask: { closable: false } }}
+      modalProps={{ destroyOnHidden: true, mask: { closable: false }, styles: { body: { padding: '24px' } } }}
     >
       {/* 模板下载 */}
       <div className='mb-4 flex items-center gap-3'>

@@ -67,6 +67,14 @@ public class SysUserController {
         return Result.ok();
     }
 
+    @DeleteMapping("/batch")
+    @RequiresPermission("system:user:delete")
+    @Log(title = "用户管理-批量删除", businessType = 3)
+    public Result<Void> deleteBatch(@RequestBody List<Long> ids) {
+        userService.deleteBatch(ids);
+        return Result.ok();
+    }
+
     @PutMapping("/resetPwd")
     @RequiresPermission("system:user:resetPwd")
     @Log(title = "用户管理-重置密码", businessType = 2)

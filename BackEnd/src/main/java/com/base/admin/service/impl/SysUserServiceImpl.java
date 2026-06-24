@@ -123,6 +123,16 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
+    @Transactional
+    public void deleteBatch(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new BusinessException("请选择要删除的用户");
+        }
+        userMapper.deleteBatchIds(ids);
+        userRoleMapper.deleteByUserIds(ids);
+    }
+
+    @Override
     public void resetPwd(Long userId, String password) {
         SysUser user = userMapper.selectById(userId);
         if (user == null) {

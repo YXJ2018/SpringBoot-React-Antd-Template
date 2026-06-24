@@ -8,6 +8,8 @@ import com.base.admin.domain.vo.UserImportResultVO;
 import com.base.admin.domain.vo.UserVO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface SysUserService {
 
     PageResult<UserVO> list(UserPageQueryDTO query);
@@ -19,6 +21,8 @@ public interface SysUserService {
     void update(UserDTO dto);
 
     void delete(Long userId);
+
+    void deleteBatch(List<Long> ids);
 
     void resetPwd(Long userId, String password);
 
