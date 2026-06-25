@@ -1,0 +1,3 @@
+.pagination :global(.ant-select) {
+  border-radius: 2px;
+}

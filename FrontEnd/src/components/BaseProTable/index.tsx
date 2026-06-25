@@ -1,5 +1,7 @@
 import { ProTable } from '@ant-design/pro-components';
 import type { ParamsType, ProTableProps } from '@ant-design/pro-components';
+import type { SizeType } from 'antd/es/config-provider/SizeContext';
+import styles from './index.module.css';
 
 /**
  * 扩展ProTable，添加一些公共默认属性。
@@ -11,7 +13,7 @@ import type { ParamsType, ProTableProps } from '@ant-design/pro-components';
 export default function BaseProTable<T extends Record<string, any>, U extends ParamsType = any>(
   props: ProTableProps<T, U>,
 ) {
-  const { scroll: callerScroll, pagination: callerPagination, ...restProps } = props;
+  const { scroll: callerScroll, pagination: callerPagination, className: callerClassName, ...restProps } = props;
 
   const scroll = { x: 'max-content' as const, ...callerScroll };
   // pagination：合并默认值，支持 false 禁用分页
@@ -20,8 +22,10 @@ export default function BaseProTable<T extends Record<string, any>, U extends Pa
     const { showSizeChanger: callerSSC, ...rest } = callerPagination ?? {};
     const showSizeChanger =
       callerSSC === false ? false : { variant: 'filled' as const, ...(typeof callerSSC === 'object' ? callerSSC : {}) };
-    return { showSizeChanger, ...rest };
+    return { showSizeChanger, size: 'medium' as SizeType, defaultPageSize: 10, ...rest };
   })();
+
+  const className = [styles.pagination, callerClassName].filter(Boolean).join(' ');
 
   return (
     <ProTable<T, U>
@@ -29,6 +33,7 @@ export default function BaseProTable<T extends Record<string, any>, U extends Pa
       tableAlertRender={false}
       scroll={scroll}
       pagination={pagination}
+      className={className || undefined}
       {...restProps}
     />
   );

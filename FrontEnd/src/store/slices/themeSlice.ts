@@ -13,6 +13,7 @@ const initialState: ThemeState = {
     },
     components: {
       Button: { borderRadius: 2 },
+      Pagination: { itemSize: 28 },
     },
   },
 };

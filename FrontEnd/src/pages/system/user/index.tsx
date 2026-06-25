@@ -60,6 +60,7 @@ export default function UserManage() {
         dataIndex: 'username',
         width: 100,
         hideInForm: true,
+        ellipsis: true,
       },
       {
         title: '用户名',
@@ -83,7 +84,7 @@ export default function UserManage() {
         : []),
       { title: '昵称', dataIndex: 'nickname', width: 100, ellipsis: true },
       { title: '手机号', dataIndex: 'phone', width: 140, formItemProps: { rules: validate.phone } },
-      { title: '邮箱', dataIndex: 'email', width: 140, formItemProps: { rules: validate.email } },
+      { title: '邮箱', dataIndex: 'email', width: 200, ellipsis: true, formItemProps: { rules: validate.email } },
       {
         title: '角色',
         dataIndex: 'roles',
@@ -231,6 +232,7 @@ export default function UserManage() {
         headerTitle='用户列表'
         actionRef={actionRef}
         rowKey='userId'
+        scroll={{ x: 600 }}
         search={{ labelWidth: 'auto' }}
         request={async (params) => {
           const { rows: data, total } = await getUserListApi(tools.handleSearchParams(params));
