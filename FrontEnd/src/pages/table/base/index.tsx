@@ -94,7 +94,7 @@ const data: DataType[] = [
 const App: React.FC = () => (
   <div className='flex flex-col gap-5'>
     <ProCard>
-      <div className='text-xl font-medium mb-3'>基础表格示例</div>
+      <div className='mb-3 text-xl font-medium'>基础表格示例</div>
       <div className='text-gray-500'>当有大量结构化的数据需要展现时；</div>
       <div className='text-gray-500'>简单的表格，最后一列是各种操作。</div>
     </ProCard>

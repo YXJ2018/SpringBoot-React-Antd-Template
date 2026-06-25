@@ -1,16 +1,14 @@
 import type { ReactNode } from 'react';
+import type { DefaultOptionType } from 'antd/lib/select';
 
-export type OptionItemType = {
+/**
+ * 继承至 import type { DefaultOptionType } from 'antd/lib/select'
+ *
+ * OptionItemType 扩展一些自定义属性
+ */
+export type OptionItemType = DefaultOptionType & {
   /**
-   * label 属性名
-   */
-  label: string;
-  /**
-   * value 属性值
-   */
-  value: string | number;
-  /**
-   * color 主色，背景色根据主色自动生成
+   * color 文字主色，背景色会根据主色自动生成
    */
   color?: string;
   /**

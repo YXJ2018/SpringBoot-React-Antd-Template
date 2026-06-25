@@ -33,7 +33,7 @@ const App: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <ProCard>
-        <div className='text-xl font-medium mb-3'>高级表单示例</div>
+        <div className='mb-3 text-xl font-medium'>高级表单示例</div>
         <div className='text-gray-500'>
           ProForm 是基于 antd Form 的可降级封装，与 antd
           功能完全对齐，但是在其之上还增加一些预设行为和多种布局。这些布局之间可以无缝切换，并且拥有公共的 API

@@ -137,7 +137,7 @@ const columns: ProColumns<ProjectItem>[] = [
 const App = () => (
   <div className='flex flex-col gap-5'>
     <ProCard>
-      <div className='text-xl font-medium mb-3'>高级列表示例</div>
+      <div className='mb-3 text-xl font-medium'>高级列表示例</div>
       <div className='text-gray-500'>
         当你需要一个标准的列表展现，或需要在列表和表格之间灵活切换时，ProList 是不二选择。
       </div>

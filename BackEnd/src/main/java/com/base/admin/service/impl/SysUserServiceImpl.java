@@ -4,14 +4,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.admin.common.PageResult;
 import com.base.admin.domain.dto.UserDTO;
+import com.base.admin.domain.dto.UserExcelRowDTO;
+import com.base.admin.domain.dto.UserExportRowDTO;
+import com.base.admin.domain.dto.UserPageQueryDTO;
 import com.base.admin.domain.dto.UserRoleDTO;
 import com.base.admin.domain.entity.SysRole;
 import com.base.admin.domain.entity.SysUser;
 import com.base.admin.domain.entity.SysUserRole;
 import com.base.admin.domain.vo.RoleSimpleVO;
+import com.base.admin.domain.vo.UserImportResultVO;
 import com.base.admin.domain.vo.UserVO;
 import com.base.admin.exception.BusinessException;
 import com.base.admin.config.DemoGuard;
+import com.base.admin.listener.UserExcelListener;
 import com.base.admin.mapper.SysRoleMapper;
 import com.base.admin.mapper.SysUserMapper;
 import com.base.admin.mapper.SysUserRoleMapper;
@@ -21,8 +26,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,16 +45,28 @@ public class SysUserServiceImpl implements SysUserService {
     private final DemoGuard demoGuard;
 
     @Override
-    public PageResult<UserVO> list(String username, String nickname, String phone, Integer status,
-                                   Integer pageNum, Integer pageSize) {
+    public PageResult<UserVO> list(UserPageQueryDTO query) {
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StringUtils.hasText(username), SysUser::getUsername, username)
-                .like(StringUtils.hasText(nickname), SysUser::getNickname, nickname)
-                .like(StringUtils.hasText(phone), SysUser::getPhone, phone)
-                .eq(status != null, SysUser::getStatus, status)
-                .orderByDesc(SysUser::getCreateTime);
+        wrapper.like(StringUtils.hasText(query.getUsername()), SysUser::getUsername, query.getUsername())
+                .like(StringUtils.hasText(query.getNickname()), SysUser::getNickname, query.getNickname())
+                .like(StringUtils.hasText(query.getPhone()), SysUser::getPhone, query.getPhone())
+                .like(StringUtils.hasText(query.getEmail()), SysUser::getEmail, query.getEmail())
+                .eq(query.getStatus() != null, SysUser::getStatus, query.getStatus())
+                .orderByDesc(SysUser::getCreateTime)
+                .orderByDesc(SysUser::getUserId);
 
-        Page<SysUser> page = userMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        if (query.getRoleIds() != null && !query.getRoleIds().isEmpty()) {
+            List<Long> userIds = userRoleMapper.selectList(
+                    new LambdaQueryWrapper<SysUserRole>().in(SysUserRole::getRoleId, query.getRoleIds()))
+                    .stream().map(SysUserRole::getUserId).distinct().collect(Collectors.toList());
+            if (userIds.isEmpty()) {
+                return new PageResult<>(0L, List.of());
+            }
+            wrapper.in(SysUser::getUserId, userIds);
+        }
+
+        Page<SysUser> page = userMapper.selectPage(
+                new Page<>(query.getPageNum(), query.getPageSize()), wrapper);
         List<UserVO> rows = page.getRecords().stream().map(this::toUserVO).collect(Collectors.toList());
         return new PageResult<>(page.getTotal(), rows);
     }
@@ -117,6 +138,16 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
+    @Transactional
+    public void deleteBatch(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new BusinessException("请选择要删除的用户");
+        }
+        userMapper.deleteBatchIds(ids);
+        userRoleMapper.deleteByUserIds(ids);
+    }
+
+    @Override
     public void resetPwd(Long userId, String password) {
         demoGuard.checkModifyUser(userId, "重置密码");
         SysUser user = userMapper.selectById(userId);
@@ -144,6 +175,74 @@ public class SysUserServiceImpl implements SysUserService {
         demoGuard.checkModifyUser(dto.getUserId(), "分配角色");
         demoGuard.checkAssignRoles(dto.getUserId(), dto.getRoleIds());
         saveUserRoles(dto.getUserId(), dto.getRoleIds());
+    }
+
+    @Override
+    @Transactional
+    public UserImportResultVO importUsers(MultipartFile file) {
+        UserExcelListener listener = new UserExcelListener(userMapper, passwordEncoder);
+        try {
+            com.alibaba.excel.EasyExcel.read(file.getInputStream(), UserExcelRowDTO.class, listener)
+                    .sheet().doRead();
+        } catch (Exception e) {
+            throw new BusinessException("Excel解析失败: " + e.getMessage());
+        }
+
+        List<SysUser> validUsers = listener.getValidUsers();
+        for (SysUser user : validUsers) {
+            userMapper.insert(user);
+        }
+
+        UserImportResultVO result = new UserImportResultVO();
+        result.setTotalCount(listener.getTotalCount());
+        result.setSuccessCount(validUsers.size());
+        result.setFailureCount(listener.getErrors().size());
+        result.setErrors(listener.getErrors());
+        return result;
+    }
+
+    @Override
+    public void exportUsers(List<Long> ids, jakarta.servlet.http.HttpServletResponse response) throws IOException {
+        List<SysUser> users = userMapper.selectBatchIds(ids);
+        List<UserExportRowDTO> rows = users.stream().map(u -> {
+            UserExportRowDTO dto = new UserExportRowDTO();
+            dto.setUserId(u.getUserId());
+            dto.setUsername(u.getUsername());
+            dto.setNickname(u.getNickname());
+            dto.setEmail(u.getEmail());
+            dto.setPhone(u.getPhone());
+            dto.setGender(toGenderText(u.getGender()));
+            dto.setStatus(toStatusText(u.getStatus()));
+            // 加载角色
+            List<SysUserRole> userRoles = userRoleMapper.selectList(
+                    new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, u.getUserId()));
+            if (!userRoles.isEmpty()) {
+                List<Long> roleIds = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+                List<SysRole> roles = roleMapper.selectBatchIds(roleIds);
+                dto.setRoles(roles.stream().map(SysRole::getRoleName).collect(Collectors.joining("、")));
+            }
+            if (u.getCreateTime() != null) {
+                dto.setCreateTime(u.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            return dto;
+        }).collect(Collectors.toList());
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String filename = java.net.URLEncoder.encode("用户导出数据.xlsx", java.nio.charset.StandardCharsets.UTF_8);
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + filename);
+        com.alibaba.excel.EasyExcel.write(response.getOutputStream(), UserExportRowDTO.class)
+                .sheet("用户数据").doWrite(rows);
+    }
+
+    private static final Map<Integer, String> GENDER_MAP = Map.of(0, "未知", 1, "男", 2, "女");
+    private static final Map<Integer, String> STATUS_MAP = Map.of(0, "启用", 1, "停用");
+
+    private static String toGenderText(Integer gender) {
+        return gender == null ? "" : GENDER_MAP.getOrDefault(gender, "");
+    }
+
+    private static String toStatusText(Integer status) {
+        return status == null ? "" : STATUS_MAP.getOrDefault(status, "");
     }
 
     private void saveUserRoles(Long userId, List<Long> roleIds) {

@@ -33,3 +33,16 @@ export interface UserDTO {
   remark?: string;
   roleIds?: number[];
 }
+
+export interface UserImportError {
+  rowIndex: number;
+  field: string;
+  message: string;
+}
+
+export interface UserImportResult {
+  totalCount: number;
+  successCount: number;
+  failureCount: number;
+  errors: UserImportError[];
+}

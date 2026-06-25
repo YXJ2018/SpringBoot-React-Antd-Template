@@ -27,7 +27,7 @@ export default function Login() {
 
   return (
     <div
-      className='relative flex items-center justify-center min-h-screen overflow-hidden'
+      className='relative flex min-h-screen items-center justify-center overflow-hidden'
       style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 30%, #e0e7ff 60%, #f0f5ff 100%)' }}
     >
       {/* 装饰圆形 */}
@@ -67,19 +67,19 @@ export default function Login() {
 
       {/* 登录卡片 */}
       <Card
-        className='relative w-100 shadow-xl backdrop-blur-sm rounded-2xl!'
+        className='relative w-100 rounded-2xl! shadow-xl backdrop-blur-sm'
         styles={{ body: { padding: '40px 36px 32px' } }}
       >
         {/* Logo & 标题 */}
-        <div className='text-center mb-8'>
+        <div className='mb-8 text-center'>
           <div
-            className='inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4'
+            className='mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl'
             style={{ background: 'linear-gradient(135deg, var(--ant-color-primary), var(--ant-color-primary-hover))' }}
           >
-            <span className='text-white text-2xl font-bold'>B</span>
+            <span className='text-2xl font-bold text-white'>B</span>
           </div>
-          <h1 className='text-2xl font-bold text-gray-800 tracking-tight'>Base Admin</h1>
-          <p className='text-gray-400 text-sm mt-1.5'>基础权限管理系统</p>
+          <h1 className='text-2xl font-bold tracking-tight text-gray-800'>Base Admin</h1>
+          <p className='mt-1.5 text-sm text-gray-400'>基础权限管理系统</p>
         </div>
 
         {/* 登录表单 */}
@@ -115,14 +115,14 @@ export default function Login() {
               htmlType='submit'
               loading={loading}
               block
-              className='rounded-lg! h-11! text-base! font-medium!'
+              className='h-11! rounded-lg! text-base! font-medium!'
             >
               登 录
             </Button>
           </Form.Item>
         </Form>
 
-        <p className='text-center text-gray-400 text-xs mt-4'>默认账号: admin / admin123</p>
+        <p className='mt-4 text-center text-xs text-gray-400'>默认账号: admin / admin123</p>
       </Card>
     </div>
   );

@@ -5,7 +5,7 @@ import { ProCard } from '@ant-design/pro-components';
 const App: React.FC = () => (
   <div className='flex flex-col gap-5'>
     <ProCard>
-      <div className='text-xl font-medium mb-3'>基础描述组件示例</div>
+      <div className='mb-3 text-xl font-medium'>基础描述组件示例</div>
       <div className='text-gray-500'>展示多个只读字段的组合。</div>
     </ProCard>
     <ProCard styles={{ body: { paddingTop: '40px' } }}>

@@ -18,7 +18,7 @@ interface ActionButtonsProps {
   maxVisible?: number;
 }
 
-export function ActionButtons({ items, maxVisible = 3 }: ActionButtonsProps) {
+export default function ActionButtons({ items, maxVisible = 3 }: ActionButtonsProps) {
   const { has } = usePermission();
   const [activeConfirm, setActiveConfirm] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -109,7 +109,7 @@ export function ActionButtons({ items, maxVisible = 3 }: ActionButtonsProps) {
           item.onClick?.();
           closeConfirmAndDropdown();
         }}
-        className='w-full block'
+        className='block w-full'
       >
         {btn}
       </span>
@@ -132,7 +132,7 @@ export function ActionButtons({ items, maxVisible = 3 }: ActionButtonsProps) {
               }
             }}
             popupRender={() => (
-              <div className='bg-white rounded shadow-md p-2 flex flex-col min-w-2'>
+              <div className='flex min-w-2 flex-col rounded bg-white p-2 shadow-md'>
                 {overflow.map((item) => (
                   <div key={item.key}>{renderOverflowItem(item)}</div>
                 ))}

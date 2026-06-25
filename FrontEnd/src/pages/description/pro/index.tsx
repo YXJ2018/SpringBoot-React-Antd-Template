@@ -5,7 +5,7 @@ const App: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <ProCard>
-        <div className='text-xl font-medium mb-3'>高级描述示例</div>
+        <div className='mb-3 text-xl font-medium'>高级描述示例</div>
         <div className='text-gray-500'>
           ProDescriptions 的诞生是为了解决项目中需要写很多 Descriptions
           的样板代码的问题，所以在其中封装了很多常用的逻辑。在 React 中写一个 Descriptions

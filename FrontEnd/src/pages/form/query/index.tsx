@@ -5,7 +5,7 @@ const App: React.FC = () => {
   return (
     <div className='flex flex-col gap-5'>
       <ProCard>
-        <div className='text-xl font-medium mb-3'>Query筛选表单示例</div>
+        <div className='mb-3 text-xl font-medium'>Query筛选表单示例</div>
         <div className='text-gray-500'>
           有些时候表单要与别的组件组合使用，常见的有 Table ，List 等，这时候就需要一些特殊形态的表单。
         </div>

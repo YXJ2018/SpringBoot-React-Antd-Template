@@ -30,10 +30,10 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 import { getMenuTreeApi, getMenuListApi, createMenuApi, updateMenuApi, deleteMenuApi } from '@/api/menu';
-import { PermissionButton } from '@/components/PermissionButton';
+import PermissionButton from '@/components/Buttons/PermissionButton';
 import type { MenuVO, MenuTree } from '@/types/menu';
+import IconPicker from '@/components/IconPicker';
 import type { RootState } from '@/store';
-import { IconPicker } from '@/components/IconPicker';
 import styles from './index.module.css';
 
 const menuTypeMap: Record<string, { text: string; color: string; icon: ReactNode }> = {
@@ -269,18 +269,18 @@ export default function MenuManage() {
       : '';
 
   return (
-    <div className='flex flex-col gap-4 h-[calc(100vh-100px)]'>
+    <div className='flex h-[calc(100vh-100px)] flex-col gap-4'>
       {showInfo && (
         <Card styles={{ body: { padding: '12px 20px' } }}>
           <div className='flex-1'>
             <div className='flex items-center gap-x-3'>
-              <div className='font-medium text-xl'>菜单管理</div>
+              <div className='text-xl font-medium'>菜单管理</div>
               <Space size={8}>
                 <Tag color='blue'>目录</Tag>
                 <Tag color='green'>菜单</Tag>
                 <Tag color='orange'>按钮</Tag>
               </Space>
-              <div className='ml-auto bg-gray-50 text-[#999] cursor-pointer hover:text-[#333]'>
+              <div className='ml-auto cursor-pointer bg-gray-50 text-[#999] hover:text-[#333]'>
                 <CloseOutlined
                   style={{
                     fontSize: '12px',
@@ -294,7 +294,7 @@ export default function MenuManage() {
                 />
               </div>
             </div>
-            <div className='text-xs text-[#999] mt-4'>
+            <div className='mt-4 text-xs text-[#999]'>
               <Space
                 vertical
                 size={6}
@@ -309,7 +309,7 @@ export default function MenuManage() {
         </Card>
       )}
 
-      <div className='flex gap-4 flex-1 overflow-hidden'>
+      <div className='flex flex-1 gap-4 overflow-hidden'>
         {/* Left: Tree */}
         <Card
           title={
@@ -328,7 +328,7 @@ export default function MenuManage() {
               新增顶级
             </PermissionButton>
           }
-          className='w-110 shrink-0 flex flex-col'
+          className='flex w-110 shrink-0 flex-col'
           styles={{ body: { flex: 1, overflow: 'auto', padding: '12px' } }}
         >
           <Input.Search
@@ -368,7 +368,7 @@ export default function MenuManage() {
               <span>{formTitle || '菜单详情'}</span>
             </div>
           }
-          className='flex-1 flex flex-col'
+          className='flex flex-1 flex-col'
           styles={{ body: { flex: 1, overflow: 'auto', padding: '16px 24px' } }}
         >
           {isEditing ? (
@@ -567,10 +567,10 @@ function renderTreeNode(
   const isProtected = demoEnabled && node.demoProtected;
 
   return (
-    <div className={`flex items-center justify-between w-full py-px ${isDisabled ? styles.disabledNode : ''}`}>
-      <div className='flex items-center gap-2 min-w-0'>
+    <div className={`flex w-full items-center justify-between py-px ${isDisabled ? styles.disabledNode : ''}`}>
+      <div className='flex min-w-0 items-center gap-2'>
         <span
-          className='flex items-center justify-center shrink-0'
+          className='flex shrink-0 items-center justify-center'
           style={{ color: typeInfo.color, fontSize: '1.5em', width: '1.5em', height: '1.5em' }}
         >
           {typeInfo.icon}

@@ -32,9 +32,9 @@ export default function IconStatus({ type, value, style }: Props) {
 
   return (
     <div
-      className={`inline-flex items-center rounded-full px-2.5 py-1.25 text-xs font-medium gap-1`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1.25 text-xs font-medium`}
       style={{ backgroundColor: color + '20', color }}
-      title={option?.label}
+      title={option?.label as any}
     >
       {renderIcon()}
       <span>{option?.label}</span>
