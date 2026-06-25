@@ -12,6 +12,7 @@ import {
   deleteUserBatchApi,
   resetPwdApi,
   assignRolesApi,
+  exportUsersApi,
 } from '@/api/user';
 import { getRoleListApi } from '@/api/role';
 import PermissionButton from '@/components/Buttons/PermissionButton';
@@ -38,6 +39,8 @@ export default function UserManage() {
   const [formModalKey, setFormModalKey] = useState(0);
   const [importOpen, setImportOpen] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  /** 当前页所有行的 key，用于跨页选择时正确合并 */
+  const currentPageKeysRef = useRef<Set<number>>(new Set());
 
   const openUserModal = async (user?: UserVO) => {
     setEditingUser(user ?? null);
@@ -133,6 +136,7 @@ export default function UserManage() {
         width: 80,
         valueType: 'select',
         hideInForm: true,
+        initialValue: '',
         fieldProps: {
           options: [{ label: '全部', value: '' }, ...dictionary.userStatus],
         },
@@ -236,12 +240,21 @@ export default function UserManage() {
         search={{ labelWidth: 'auto' }}
         request={async (params) => {
           const { rows: data, total } = await getUserListApi(tools.handleSearchParams(params));
+          currentPageKeysRef.current = new Set(data.map((u) => u.userId));
           return { data, total, success: true };
         }}
         columns={columns}
         rowSelection={{
           selectedRowKeys,
-          onChange: setSelectedRowKeys,
+          onChange: (keys) => {
+            setSelectedRowKeys((prev) => {
+              const global = new Set(prev as number[]);
+              // 先移除当前页所有 key，再用 onChange 传入的 key 重新加入
+              currentPageKeysRef.current.forEach((k) => global.delete(k));
+              (keys as number[]).forEach((k) => global.add(k));
+              return [...global];
+            });
+          },
         }}
         toolBarRender={() => [
           <PermissionButton
@@ -252,6 +265,30 @@ export default function UserManage() {
             onClick={() => setImportOpen(true)}
           >
             批量导入
+          </PermissionButton>,
+          <PermissionButton
+            key='export'
+            color='default'
+            variant='filled'
+            perm='system:user:export'
+            onClick={async () => {
+              if (selectedRowKeys.length === 0) {
+                message.warning('请先选择要导出的用户');
+                return;
+              }
+              if (selectedRowKeys.length > 500) {
+                message.warning('单次最多导出500条');
+                return;
+              }
+              try {
+                await exportUsersApi(selectedRowKeys as number[]);
+                message.success('导出成功');
+              } catch {
+                message.error('导出失败');
+              }
+            }}
+          >
+            批量导出
           </PermissionButton>,
           <PermissionButton
             key='del'
@@ -273,6 +310,7 @@ export default function UserManage() {
                   await deleteUserBatchApi(selectedRowKeys as number[]);
                   message.success(`已删除 ${selectedRowKeys.length} 个用户`);
                   setSelectedRowKeys([]);
+                  currentPageKeysRef.current = new Set();
                   actionRef.current?.reload();
                 },
               });

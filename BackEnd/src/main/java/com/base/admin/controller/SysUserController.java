@@ -109,6 +109,13 @@ public class SysUserController {
         return Result.ok(userService.importUsers(file));
     }
 
+    @PostMapping("/export")
+    @RequiresPermission("system:user:export")
+    @Log(title = "用户管理-批量导出", businessType = 4)
+    public void exportUsers(@RequestBody List<Long> ids, HttpServletResponse response) throws IOException {
+        userService.exportUsers(ids, response);
+    }
+
     @GetMapping("/import/template")
     @RequiresPermission("system:user:import")
     public void downloadTemplate(HttpServletResponse response) throws IOException {

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.admin.common.PageResult;
 import com.base.admin.domain.dto.UserDTO;
 import com.base.admin.domain.dto.UserExcelRowDTO;
+import com.base.admin.domain.dto.UserExportRowDTO;
 import com.base.admin.domain.dto.UserPageQueryDTO;
 import com.base.admin.domain.dto.UserRoleDTO;
 import com.base.admin.domain.entity.SysRole;
@@ -26,7 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -181,6 +185,50 @@ public class SysUserServiceImpl implements SysUserService {
         result.setFailureCount(listener.getErrors().size());
         result.setErrors(listener.getErrors());
         return result;
+    }
+
+    @Override
+    public void exportUsers(List<Long> ids, jakarta.servlet.http.HttpServletResponse response) throws IOException {
+        List<SysUser> users = userMapper.selectBatchIds(ids);
+        List<UserExportRowDTO> rows = users.stream().map(u -> {
+            UserExportRowDTO dto = new UserExportRowDTO();
+            dto.setUserId(u.getUserId());
+            dto.setUsername(u.getUsername());
+            dto.setNickname(u.getNickname());
+            dto.setEmail(u.getEmail());
+            dto.setPhone(u.getPhone());
+            dto.setGender(toGenderText(u.getGender()));
+            dto.setStatus(toStatusText(u.getStatus()));
+            // 加载角色
+            List<SysUserRole> userRoles = userRoleMapper.selectList(
+                    new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, u.getUserId()));
+            if (!userRoles.isEmpty()) {
+                List<Long> roleIds = userRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+                List<SysRole> roles = roleMapper.selectBatchIds(roleIds);
+                dto.setRoles(roles.stream().map(SysRole::getRoleName).collect(Collectors.joining("、")));
+            }
+            if (u.getCreateTime() != null) {
+                dto.setCreateTime(u.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            return dto;
+        }).collect(Collectors.toList());
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String filename = java.net.URLEncoder.encode("用户导出数据.xlsx", java.nio.charset.StandardCharsets.UTF_8);
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + filename);
+        com.alibaba.excel.EasyExcel.write(response.getOutputStream(), UserExportRowDTO.class)
+                .sheet("用户数据").doWrite(rows);
+    }
+
+    private static final Map<Integer, String> GENDER_MAP = Map.of(0, "未知", 1, "男", 2, "女");
+    private static final Map<Integer, String> STATUS_MAP = Map.of(0, "启用", 1, "停用");
+
+    private static String toGenderText(Integer gender) {
+        return gender == null ? "" : GENDER_MAP.getOrDefault(gender, "");
+    }
+
+    private static String toStatusText(Integer status) {
+        return status == null ? "" : STATUS_MAP.getOrDefault(status, "");
     }
 
     private void saveUserRoles(Long userId, List<Long> roleIds) {

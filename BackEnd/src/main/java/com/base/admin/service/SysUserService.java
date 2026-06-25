@@ -6,8 +6,10 @@ import com.base.admin.domain.dto.UserPageQueryDTO;
 import com.base.admin.domain.dto.UserRoleDTO;
 import com.base.admin.domain.vo.UserImportResultVO;
 import com.base.admin.domain.vo.UserVO;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface SysUserService {
@@ -31,4 +33,6 @@ public interface SysUserService {
     void assignRoles(UserRoleDTO dto);
 
     UserImportResultVO importUsers(MultipartFile file);
+
+    void exportUsers(List<Long> ids, HttpServletResponse response) throws IOException;
 }

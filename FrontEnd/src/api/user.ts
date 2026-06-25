@@ -3,7 +3,16 @@ import type { PageResult, PageQuery } from '@/types/api';
 import type { UserVO, UserDTO, UserImportResult } from '@/types/user';
 import { getToken } from '@/utils/auth';
 
-export function getUserListApi(data: PageQuery & { username?: string; nickname?: string; phone?: string; email?: string; roleIds?: number[]; status?: number }) {
+export function getUserListApi(
+  data: PageQuery & {
+    username?: string;
+    nickname?: string;
+    phone?: string;
+    email?: string;
+    roleIds?: number[];
+    status?: number;
+  },
+) {
   return request.post<unknown, PageResult<UserVO>>('/system/user/list', data);
 }
 
@@ -48,19 +57,40 @@ export function importUsersApi(file: File) {
   });
 }
 
-export async function downloadTemplateApi() {
+/** 通用 blob 下载：fetch → blob → 触发浏览器保存 */
+async function downloadBlob(
+  url: string,
+  filename: string,
+  init?: { method?: string; headers?: Record<string, string>; body?: string },
+) {
   const token = getToken();
-  const res = await fetch('/api/system/user/import/template', {
-    headers: { Authorization: `Bearer ${token}` },
+  const res = await fetch(url, {
+    ...init,
+    headers: { ...init?.headers, Authorization: `Bearer ${token}` },
   });
+  if (!res.ok) {
+    throw new Error('下载失败');
+  }
   const blob = await res.blob();
-  const url = window.URL.createObjectURL(blob);
+  const objectUrl = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.style.display = 'none';
-  a.href = url;
-  a.download = '用户导入模板.xlsx';
+  a.href = objectUrl;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
+  window.URL.revokeObjectURL(objectUrl);
+}
+
+export function exportUsersApi(ids: number[]) {
+  return downloadBlob('/api/system/user/export', '用户导出数据.xlsx', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(ids),
+  });
+}
+
+export function downloadTemplateApi() {
+  return downloadBlob('/api/system/user/import/template', '用户导入模板.xlsx');
 }
