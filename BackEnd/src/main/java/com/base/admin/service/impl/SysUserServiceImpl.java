@@ -46,7 +46,8 @@ public class SysUserServiceImpl implements SysUserService {
                 .like(StringUtils.hasText(query.getPhone()), SysUser::getPhone, query.getPhone())
                 .like(StringUtils.hasText(query.getEmail()), SysUser::getEmail, query.getEmail())
                 .eq(query.getStatus() != null, SysUser::getStatus, query.getStatus())
-                .orderByDesc(SysUser::getCreateTime);
+                .orderByDesc(SysUser::getCreateTime)
+                .orderByDesc(SysUser::getUserId);
 
         if (query.getRoleIds() != null && !query.getRoleIds().isEmpty()) {
             List<Long> userIds = userRoleMapper.selectList(
