@@ -317,6 +317,10 @@ const UserManage = memo(function UserManage() {
                 message.warning('请先选择要删除的用户');
                 return;
               }
+              if (selectedRowKeys.some((k) => isAdminUser(k as number))) {
+                message.warning('管理员不允许删除');
+                return;
+              }
               Modal.confirm({
                 title: '批量删除用户',
                 content: `确定要删除选中的 ${selectedRowKeys.length} 个用户吗？此操作不可撤销。`,
