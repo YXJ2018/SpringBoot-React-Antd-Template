@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useEffect, type Key } from 'react';
+import { memo, useRef, useState, useMemo, useEffect, type Key } from 'react';
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import type { ActionType, ProColumnType } from '@ant-design/pro-components';
 import BaseProTable from '@/components/BaseProTable';
@@ -25,7 +25,7 @@ import validate from '@/utils/validate';
 import type { UserVO } from '@/types/user';
 import ImportUserModal from './components/ImportUserModal';
 
-export default function UserManage() {
+const UserManage = memo(function UserManage() {
   const actionRef = useRef<ActionType>(null);
   const [editingUser, setEditingUser] = useState<UserVO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -439,4 +439,5 @@ export default function UserManage() {
       />
     </>
   );
-}
+});
+export default UserManage;
