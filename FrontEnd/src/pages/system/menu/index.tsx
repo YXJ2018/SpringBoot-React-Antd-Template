@@ -193,10 +193,13 @@ export default function MenuManage() {
     const values = await form.validateFields();
     setSaving(true);
     try {
+      const statusValue = values.menuType === 'F'
+        ? (isAddChild ? 0 : (selectedMenu?.status ?? 0))
+        : (values.status ? 0 : 1);
       const dto = {
         ...values,
         visible: 0,
-        status: values.status ? 0 : 1,
+        status: statusValue,
       };
       dto.path = parentPathPrefix ? `${parentPathPrefix}/${values.path}` : values.path;
 
