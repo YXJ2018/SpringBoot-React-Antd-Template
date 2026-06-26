@@ -5,6 +5,12 @@ spring:
     password: your_password
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
