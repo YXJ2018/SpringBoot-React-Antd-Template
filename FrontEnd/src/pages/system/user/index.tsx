@@ -128,6 +128,7 @@ const UserManage = memo(function UserManage() {
         search: false,
         valueType: 'select',
         hideInTable: true,
+        initialValue: 0,
         fieldProps: { options: dictionary.gender },
       },
       {
