@@ -246,7 +246,11 @@ const UserManage = memo(function UserManage() {
         columns={columns}
         rowSelection={{
           selectedRowKeys,
-          onChange: (keys) => {
+          onChange: (keys, _rows, { type }) => {
+            // 取消选择
+            if (type === 'none') {
+              return setSelectedRowKeys([]);
+            }
             setSelectedRowKeys((prev) => {
               const global = new Set(prev as number[]);
               // 先移除当前页所有 key，再用 onChange 传入的 key 重新加入

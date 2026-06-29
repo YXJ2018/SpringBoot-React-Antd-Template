@@ -30,7 +30,6 @@ export default function BaseProTable<T extends Record<string, any>, U extends Pa
   return (
     <ProTable<T, U>
       options={false}
-      tableAlertRender={false}
       scroll={scroll}
       pagination={pagination}
       className={className || undefined}
