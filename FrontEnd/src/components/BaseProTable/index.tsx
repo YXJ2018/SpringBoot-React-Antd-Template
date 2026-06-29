@@ -25,12 +25,11 @@ export default function BaseProTable<T extends Record<string, any>, U extends Pa
     return { showSizeChanger, size: 'medium' as SizeType, defaultPageSize: 10, ...rest };
   })();
 
-  const className = [styles.pagination, callerClassName].filter(Boolean).join(' ');
+  const className = [styles.table, callerClassName].filter(Boolean).join(' ');
 
   return (
     <ProTable<T, U>
       options={false}
-      tableAlertRender={false}
       scroll={scroll}
       pagination={pagination}
       className={className || undefined}
