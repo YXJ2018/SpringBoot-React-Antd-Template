@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ProFormText, ProFormSelect, ProFormDigit, ProFormTextArea } from '@ant-design/pro-components';
-import { Button, Card, List, message, Tree, Empty, Space, Tag, Popconfirm, Input, Checkbox, theme } from 'antd';
+import { Button, Card, List, App, Tree, Empty, Space, Tag, Popconfirm, Input, Checkbox, theme } from 'antd';
 import { SafetyOutlined, UserOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import {
   getRoleListApi,
@@ -18,6 +18,7 @@ import type { MenuTree } from '@/types/menu';
 import dictionary from '../../../dictionary';
 
 export default function RoleManage() {
+  const { message } = App.useApp();
   const [roles, setRoles] = useState<RoleVO[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<RoleVO | null>(null);

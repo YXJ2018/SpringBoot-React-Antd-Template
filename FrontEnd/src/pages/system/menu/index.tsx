@@ -11,7 +11,7 @@ import {
   Space,
   Tag,
   Empty,
-  message,
+  App,
   Popconfirm,
   Spin,
   Tooltip,
@@ -41,6 +41,7 @@ const menuTypeMap: Record<string, { text: string; color: string; icon: ReactNode
 };
 
 export default function MenuManage() {
+  const { message } = App.useApp();
   const [menuTree, setMenuTree] = useState<MenuTree[]>([]);
   const [flatMenus, setFlatMenus] = useState<MenuVO[]>([]);
   const [loading, setLoading] = useState(false);
@@ -190,9 +191,8 @@ export default function MenuManage() {
     const values = await form.validateFields();
     setSaving(true);
     try {
-      const statusValue = values.menuType === 'F'
-        ? (isAddChild ? 0 : (selectedMenu?.status ?? 0))
-        : (values.status ? 0 : 1);
+      const statusValue =
+        values.menuType === 'F' ? (isAddChild ? 0 : (selectedMenu?.status ?? 0)) : values.status ? 0 : 1;
       const dto = {
         ...values,
         visible: 0,

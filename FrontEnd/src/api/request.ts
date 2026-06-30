@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { message } from 'antd';
+import { message } from '@/store/slices/staticFunctionSlice';
 import { getToken, removeToken } from '@/utils/auth';
 import type { ApiResult } from '@/types/api';
 
@@ -23,10 +23,11 @@ service.interceptors.response.use(
   (response) => {
     const res = response.data as ApiResult<unknown>;
     if (res.code !== 200) {
-      message.error(res.msg || 'Error');
       if (res.code === 401 || res.code === 403) {
+        sessionStorage.setItem('authError', res.msg || '登录已过期，请重新登录');
         removeToken();
         window.location.href = '/login';
+        return Promise.reject(new Error(res.msg));
       }
       return Promise.reject(new Error(res.msg));
     }
@@ -34,10 +35,12 @@ service.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
+      sessionStorage.setItem('authError', '登录已过期，请重新登录');
       removeToken();
       window.location.href = '/login';
+    } else {
+      message.error(error.message || 'Network error');
     }
-    message.error(error.message || 'Network error');
     return Promise.reject(error);
   },
 );

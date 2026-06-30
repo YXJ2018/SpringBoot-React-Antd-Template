@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Button, message, Table, Upload } from 'antd';
+import { Alert, Button, App, Table, Upload } from 'antd';
 import { InboxOutlined, DownloadOutlined } from '@ant-design/icons';
 import BaseModalForm from '@/components/BaseModalForm/index';
 import { importUsersApi, downloadTemplateApi } from '@/api/user';
@@ -12,6 +12,7 @@ interface ImportUserModalProps {
 }
 
 export default function ImportUserModal({ open, onOpenChange, onSuccess }: ImportUserModalProps) {
+  const { message } = App.useApp();
   const [file, setFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<UserImportResult | null>(null);

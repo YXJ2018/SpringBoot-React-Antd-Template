@@ -3,7 +3,7 @@ import { ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import type { ActionType, ProColumnType } from '@ant-design/pro-components';
 import BaseProTable from '@/components/BaseProTable';
 import BaseModalForm from '@/components/BaseModalForm/index';
-import { message, Tag, Modal } from 'antd';
+import { App, Tag, Modal } from 'antd';
 import {
   getUserListApi,
   createUserApi,
@@ -26,6 +26,7 @@ import type { UserVO } from '@/types/user';
 import ImportUserModal from './components/ImportUserModal';
 
 const UserManage = memo(function UserManage() {
+  const { message } = App.useApp();
   const actionRef = useRef<ActionType>(null);
   const [editingUser, setEditingUser] = useState<UserVO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -128,7 +129,6 @@ const UserManage = memo(function UserManage() {
         search: false,
         valueType: 'select',
         hideInTable: true,
-        initialValue: 0,
         fieldProps: { options: dictionary.gender },
       },
       {
@@ -137,7 +137,6 @@ const UserManage = memo(function UserManage() {
         width: 80,
         valueType: 'select',
         hideInForm: true,
-        initialValue: '',
         fieldProps: {
           options: [{ label: '全部', value: '' }, ...dictionary.userStatus],
         },
@@ -229,7 +228,7 @@ const UserManage = memo(function UserManage() {
       },
     ];
     return result;
-  }, [allRoles, editingUser]);
+  }, [allRoles, editingUser, message]);
 
   return (
     <>
@@ -348,7 +347,7 @@ const UserManage = memo(function UserManage() {
         initialValues={
           editingUser
             ? ({ ...editingUser, roleIds: editingUser.roles?.map((r) => r.roleId) } as any)
-            : ({ status: 0 } as any)
+            : ({ gender: 0, status: 0 } as any)
         }
         onFinish={async (values) => {
           const dto = { ...values } as any;

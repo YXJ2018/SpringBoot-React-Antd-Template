@@ -1,15 +1,24 @@
-import { useState } from 'react';
-import { Form, Input, Button, Card, message } from 'antd';
+import { useState, useEffect } from 'react';
+import { Form, Input, Button, Card } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login, getInfo } from '@/store/slices/userSlice';
+import { message } from '@/store/slices/staticFunctionSlice';
 import type { AppDispatch } from '@/store';
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const authError = sessionStorage.getItem('authError');
+    if (authError) {
+      sessionStorage.removeItem('authError');
+      message.error(authError);
+    }
+  }, []);
 
   const onFinish = async (values: { username: string; password: string }) => {
     setLoading(true);

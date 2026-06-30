@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Spin, App as AntdApp, ConfigProvider } from 'antd';
 import { createAppRouter } from '@/router';
 import { getInfo } from '@/store/slices/userSlice';
+import { StaticFunctionCapture } from '@/store/slices/staticFunctionSlice';
 import type { RootState, AppDispatch } from '@/store';
 
 export default function App() {
@@ -24,21 +25,21 @@ export default function App() {
     }
   }, [token, routesLoaded, dispatch]);
 
-  if (token && !routesLoaded) {
-    return (
-      <div className='flex min-h-screen items-center justify-center'>
-        <Spin size='large' />
-      </div>
-    );
-  }
-
   const isLoggedIn = !!token && routesLoaded;
+  const showLoading = token && !routesLoaded;
   const router = createAppRouter(menus, isLoggedIn);
 
   return (
     <ConfigProvider theme={themeConfig}>
-      <AntdApp>
-        <RouterProvider router={router} />
+      <AntdApp message={{ maxCount: 1 }}>
+        <StaticFunctionCapture />
+        {showLoading ? (
+          <div className='flex min-h-screen items-center justify-center'>
+            <Spin size='large' />
+          </div>
+        ) : (
+          <RouterProvider router={router} />
+        )}
       </AntdApp>
     </ConfigProvider>
   );
