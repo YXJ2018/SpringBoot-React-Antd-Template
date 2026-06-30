@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { ProFormText, ProFormSelect, ProFormDigit, ProFormTextArea } from '@ant-design/pro-components';
-import { Button, Card, List, message, Tree, Empty, Space, Tag, Popconfirm, Input, Checkbox, theme } from 'antd';
+import { Button, Card, List, App, Tree, Empty, Space, Tag, Popconfirm, Input, Checkbox, theme } from 'antd';
 import { SafetyOutlined, UserOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import {
   getRoleListApi,
@@ -23,6 +23,7 @@ const ADMIN_ROLE_ID = 1;
 
 export default function RoleManage() {
   const demoEnabled = useSelector((state: RootState) => state.user.demoEnabled);
+  const { message } = App.useApp();
   const [roles, setRoles] = useState<RoleVO[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<RoleVO | null>(null);

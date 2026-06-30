@@ -1,7 +1,25 @@
 import axios from 'axios';
-import { message } from 'antd';
+import { message } from '@/store/slices/staticFunctionSlice';
 import { getToken, removeToken } from '@/utils/auth';
 import type { ApiResult } from '@/types/api';
+
+const HTTP_UNAUTHORIZED = 401; // 未认证
+const HTTP_FORBIDDEN = 403; // 已认证，未授权
+
+/** 处理认证/授权失败，返回 true 表示已拦截 */
+function handleAuthError(code: number): boolean {
+  if (code === HTTP_UNAUTHORIZED) {
+    sessionStorage.setItem('authError', '登录已失效，请重新登录');
+    removeToken();
+    window.location.href = '/login';
+    return true;
+  }
+  if (code === HTTP_FORBIDDEN) {
+    message.error('权限不足，请联系管理员');
+    return true;
+  }
+  return false;
+}
 
 const service = axios.create({
   baseURL: '/api',
@@ -22,22 +40,15 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response.data as ApiResult<unknown>;
-    if (res.code !== 200) {
-      message.error(res.msg || 'Error');
-      if (res.code === 401 || res.code === 403) {
-        removeToken();
-        window.location.href = '/login';
-      }
+    if (handleAuthError(res.code)) {
       return Promise.reject(new Error(res.msg));
     }
     return res.data as any;
   },
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      removeToken();
-      window.location.href = '/login';
+    if (!handleAuthError(error.response?.status)) {
+      message.error(error.message || '网络错误，请联系管理员');
     }
-    message.error(error.message || 'Network error');
     return Promise.reject(error);
   },
 );

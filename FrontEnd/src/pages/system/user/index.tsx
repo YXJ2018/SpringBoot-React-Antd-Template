@@ -1,10 +1,10 @@
-import { memo, useRef, useState, useMemo, useEffect, type Key } from 'react';
+import { memo, useCallback, useRef, useState, useMemo, useEffect, type Key } from 'react';
 import { useSelector } from 'react-redux';
 import { ProFormText, ProFormSelect } from '@ant-design/pro-components';
 import type { ActionType, ProColumnType } from '@ant-design/pro-components';
 import BaseProTable from '@/components/BaseProTable';
 import BaseModalForm from '@/components/BaseModalForm/index';
-import { message, Tag, Modal } from 'antd';
+import { App, Tag, Modal } from 'antd';
 import {
   getUserListApi,
   createUserApi,
@@ -31,6 +31,7 @@ const ADMIN_USER_ID = 1;
 const ADMIN_ROLE_ID = 1;
 
 const UserManage = memo(function UserManage() {
+  const { message } = App.useApp();
   const actionRef = useRef<ActionType>(null);
   const demoEnabled = useSelector((state: RootState) => state.user.demoEnabled);
   const [editingUser, setEditingUser] = useState<UserVO | null>(null);
@@ -48,7 +49,7 @@ const UserManage = memo(function UserManage() {
   /** 当前页所有行的 key，用于跨页选择时正确合并 */
   const currentPageKeysRef = useRef<Set<number>>(new Set());
 
-  const isAdminUser = (userId: number) => demoEnabled && userId === ADMIN_USER_ID;
+  const isAdminUser = useCallback((userId: number) => demoEnabled && userId === ADMIN_USER_ID, [demoEnabled]);
 
   const openUserModal = async (user?: UserVO) => {
     setEditingUser(user ?? null);
@@ -142,7 +143,6 @@ const UserManage = memo(function UserManage() {
         search: false,
         valueType: 'select',
         hideInTable: true,
-        initialValue: 0,
         fieldProps: { options: dictionary.gender },
       },
       {
@@ -151,7 +151,6 @@ const UserManage = memo(function UserManage() {
         width: 80,
         valueType: 'select',
         hideInForm: true,
-        initialValue: '',
         fieldProps: {
           options: [{ label: '全部', value: '' }, ...dictionary.userStatus],
         },
@@ -246,7 +245,7 @@ const UserManage = memo(function UserManage() {
       },
     ];
     return result;
-  }, [allRoles, editingUser, isAdminUser]);
+  }, [allRoles, editingUser, message, isAdminUser]);
 
   return (
     <>
@@ -369,7 +368,7 @@ const UserManage = memo(function UserManage() {
         initialValues={
           editingUser
             ? ({ ...editingUser, roleIds: editingUser.roles?.map((r) => r.roleId) } as any)
-            : ({ status: 0 } as any)
+            : ({ gender: 0, status: 0 } as any)
         }
         onFinish={async (values) => {
           const dto = { ...values } as any;

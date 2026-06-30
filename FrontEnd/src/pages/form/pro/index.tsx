@@ -15,7 +15,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { TreeSelect, message } from 'antd';
+import { TreeSelect, App as AntdApp } from 'antd';
 import moment from 'dayjs';
 
 import { DEMO_AREA_CASCADER, DEMO_DEPARTMENT_TREE } from './mockData';
@@ -29,6 +29,7 @@ const waitTime = (time: number = 100) => {
 };
 
 const App: React.FC = () => {
+  const { message } = AntdApp.useApp();
   const formRef = useRef<ProFormInstance>(undefined);
   return (
     <div className='flex flex-col gap-5'>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { message } from 'antd';
+import { App as AntdApp } from 'antd';
 import { DragSortTable, ProCard } from '@ant-design/pro-components';
 import type { ProColumns } from '@ant-design/pro-components';
 
@@ -48,6 +48,7 @@ const data = [
 ];
 
 const App: React.FC = () => {
+  const { message } = AntdApp.useApp();
   const [dataSource, setDataSource] = useState(data);
 
   const handleDragSortEnd = (_beforeIndex: number, _afterIndex: number, newDataSource: any) => {
