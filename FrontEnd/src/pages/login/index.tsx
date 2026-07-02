@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { login, getInfo } from '@/store/slices/userSlice';
 import { message } from '@/store/slices/staticFunctionSlice';
 import type { AppDispatch } from '@/store';
+import loginBg from '@/assets/login-bg.png';
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
@@ -36,8 +37,10 @@ export default function Login() {
 
   return (
     <div
-      className='relative flex min-h-screen items-center justify-center overflow-hidden'
-      style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 30%, #e0e7ff 60%, #f0f5ff 100%)' }}
+      className='relative flex min-h-screen items-center justify-center overflow-hidden md:justify-start'
+      style={{
+        background: `url(${loginBg}) center/cover no-repeat`,
+      }}
     >
       {/* 装饰圆形 */}
       <div
@@ -62,7 +65,7 @@ export default function Login() {
           left: -100,
         }}
       />
-      <div
+      {/* <div
         className='absolute rounded-full'
         style={{
           width: 280,
@@ -72,11 +75,11 @@ export default function Login() {
           top: '35%',
           left: '8%',
         }}
-      />
+      /> */}
 
       {/* 登录卡片 */}
       <Card
-        className='relative w-100 rounded-2xl! shadow-xl backdrop-blur-sm'
+        className='relative w-100 rounded-2xl! shadow-xl backdrop-blur-sm md:mr-40! md:ml-auto!'
         styles={{ body: { padding: '40px 36px 32px' } }}
       >
         {/* Logo & 标题 */}

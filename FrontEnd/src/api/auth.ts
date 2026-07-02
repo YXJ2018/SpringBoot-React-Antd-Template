@@ -3,8 +3,6 @@ import type { MenuTree } from '@/types/menu';
 import type { UserInfo } from '@/types/user';
 
 export function loginApi(username: string, password: string) {
-  console.log(username, password);
-
   return request.post<unknown, { token: string }>('/auth/login', { username, password });
 }
 
